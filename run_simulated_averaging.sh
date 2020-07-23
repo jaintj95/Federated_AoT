@@ -23,7 +23,7 @@ python simulated_averaging.py --fraction 0.1 \
 --poison_type southwest \
 --norm_bound 2 \
 --device=cuda:1 \
-> southwest_vgg16_blackbox_no_defense_log 2>&1
+> logs/southwest_vgg16_blackbox_no_defense_log 2>&1
 
 # emnist Ardis attack
 #python simulated_averaging.py --fraction 0.1 \
