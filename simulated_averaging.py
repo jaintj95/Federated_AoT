@@ -97,7 +97,9 @@ if __name__ == "__main__":
     use_cuda = not args.no_cuda and torch.cuda.is_available()
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
 
-    device = torch.device(args.device if use_cuda else "cpu")    
+    #device = torch.device(args.device if use_cuda else "cpu")  
+
+    device = 'cuda' if use_cuda else 'cpu'  
     """
     # hack to make stuff work on GD's machines
     if torch.cuda.device_count() > 2:
