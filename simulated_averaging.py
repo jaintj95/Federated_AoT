@@ -1,24 +1,21 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import torch.backends.cudnn as cudnn
-
-import torchvision.transforms as transforms
-from torchvision import datasets, transforms
-
 import os
 import argparse
 import pdb
 import copy
 import numpy as np
+
+import torch
+from torch import nn, optim
 from torch.optim import lr_scheduler
+import torch.nn.functional as F
+import torch.backends.cudnn as cudnn
+from torchvision import datasets, transforms
 
 from utils import *
 from fl_trainer import *
 from models.vgg import get_vgg_model
 
-READ_CKPT=True
+READ_CKPT = True
 
 
 # helper function because otherwise non-empty strings
@@ -27,6 +24,7 @@ def bool_string(s):
     if s not in {'False', 'True'}:
         raise ValueError('Not a valid boolean string')
     return s == 'True'
+
 
 if __name__ == "__main__":
     # Training settings
@@ -60,9 +58,9 @@ if __name__ == "__main__":
     parser.add_argument('--fl_mode', type=str, default="fixed-freq",
                         help='fl mode: fixed-freq mode or fixed-pool mode')
     parser.add_argument('--attacker_pool_size', type=int, default=100,
-                        help='size of attackers in the population, used when args.fl_mode == fixed-pool only')    
+                        help='size of attackers in the population, used when args.fl_mode == fixed-pool only')
     parser.add_argument('--defense_method', type=str, default="no-defense",
-                        help='defense method used: no-defense|norm-clipping|norm-clipping-adaptive|weak-dp|krum|multi-krum|rfa|')
+                        help='defenses: no-defense|norm-clipping|norm-clipping-adaptive|weak-dp|krum|multi-krum|rfa')
     parser.add_argument('--device', type=str, default='cuda',
                         help='device to set, can take the value of: cuda or cuda:x')
     parser.add_argument('--attack_method', type=str, default="blackbox",
@@ -70,7 +68,7 @@ if __name__ == "__main__":
     parser.add_argument('--dataset', type=str, default='mnist',
                         help='dataset to use during the training process')
     parser.add_argument('--model', type=str, default='lenet',
-                        help='model to use during the training process')  
+                        help='model to use during the training process')
     parser.add_argument('--eps', type=float, default=5e-5,
                         help='specify the l_inf epsilon budget')
     parser.add_argument('--norm_bound', type=float, default=3,
@@ -78,7 +76,8 @@ if __name__ == "__main__":
     parser.add_argument('--adversarial_local_training_period', type=int, default=5,
                         help='specify how many epochs the adversary should train for')
     parser.add_argument('--poison_type', type=str, default='ardis',
-                        help='specify source of data poisoning: |ardis|fashion|(for EMNIST) || |southwest|southwest+wow|southwest-da|greencar-neo|howto|(for CIFAR-10)')
+                        help='data poisoning source: |ardis|fashion|(for EMNIST) || '
+                             '|southwest|southwest+wow|southwest-da|greencar-neo|howto|(for CIFAR-10)')
     parser.add_argument('--rand_seed', type=int, default=7,
                         help='random seed utilize in the experiment for reproducibility.')
     parser.add_argument('--model_replacement', type=bool_string, default=False,
@@ -90,16 +89,17 @@ if __name__ == "__main__":
     parser.add_argument('--prox_attack', type=bool_string, default=False,
                         help='use prox attack')
     parser.add_argument('--attack_case', type=str, default="edge-case",
-                        help='attack case indicates wheather the honest nodes see the attackers poisoned data points: edge-case|normal-case|almost-edge-case')
+                        help='attack case indicates whether the honest nodes see the attackers poisoned data points: '
+                             'edge-case|normal-case|almost-edge-case')
     parser.add_argument('--stddev', type=float, default=0.158,
                         help='choose std_dev for weak-dp defense')
     args = parser.parse_args()
     use_cuda = not args.no_cuda and torch.cuda.is_available()
     kwargs = {'num_workers': 1, 'pin_memory': True} if use_cuda else {}
 
-    #device = torch.device(args.device if use_cuda else "cpu")  
+    # device = torch.device(args.device if use_cuda else "cpu")
 
-    device = 'cuda' if use_cuda else 'cpu'  
+    device = 'cuda' if use_cuda else 'cpu'
     """
     # hack to make stuff work on GD's machines
     if torch.cuda.device_count() > 2:
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     else:
         device = 'cuda' if use_cuda else 'cpu'
      """
-    
+
     logger.info("Running Attack of the tails with args: {}".format(args))
     logger.info(device)
     logger.info('==> Building model..')
@@ -121,21 +121,21 @@ if __name__ == "__main__":
     seed_experiment(seed=args.rand_seed)
 
     import copy
+
     # the hyper-params are inspired by the paper "Can you really backdoor FL?" (https://arxiv.org/pdf/1911.07963.pdf)
     # partition_strategy = "homo"
     partition_strategy = "hetero-dir"
 
-    net_dataidx_map = partition_data(
-            args.dataset, './data', partition_strategy,
-            args.num_nets, 0.5, args)
+    net_dataidx_map = partition_data(args.dataset, './data', partition_strategy, args.num_nets, 0.5, args)
 
     # rounds of fl to conduct
-    ## some hyper-params here:
-    local_training_period = args.local_train_period #5 #1
+    # some hyper-params here:
+    local_training_period = args.local_train_period  # 5 #1
     adversarial_local_training_period = 5
 
     # load poisoned dataset:
-    poisoned_train_loader, vanilla_test_loader, targetted_task_test_loader, num_dps_poisoned_dataset, clean_train_loader = load_poisoned_dataset(args=args)
+    poisoned_train_loader, vanilla_test_loader, targetted_task_test_loader, \
+        num_dps_poisoned_dataset, clean_train_loader = load_poisoned_dataset(args=args)
     # READ_CKPT = False
     if READ_CKPT:
         if args.model == "lenet":
@@ -146,7 +146,7 @@ if __name__ == "__main__":
             net_avg = get_vgg_model(args.model).to(device)
             # net_avg = VGG(args.model.upper()).to(device)
             # load model here
-            #with open("./checkpoint/trained_checkpoint_vanilla.pt", "rb") as ckpt_file:
+            # with open("./checkpoint/trained_checkpoint_vanilla.pt", "rb") as ckpt_file:
             with open("./checkpoint/Cifar10_{}_10epoch.pt".format(args.model.upper()), "rb") as ckpt_file:
                 ckpt_state_dict = torch.load(ckpt_file, map_location=device)
         net_avg.load_state_dict(ckpt_state_dict)
@@ -159,90 +159,95 @@ if __name__ == "__main__":
 
     logger.info("Test the model performance on the entire task before FL process ... ")
 
-    test(net_avg, device, vanilla_test_loader, test_batch_size=args.test_batch_size, criterion=criterion, mode="raw-task", dataset=args.dataset)
-    test(net_avg, device, targetted_task_test_loader, test_batch_size=args.test_batch_size, criterion=criterion, mode="targetted-task", dataset=args.dataset, poison_type=args.poison_type)
+    test(net_avg, device, vanilla_test_loader, test_batch_size=args.test_batch_size, criterion=criterion,
+         mode="raw-task", dataset=args.dataset)
+    test(net_avg, device, targetted_task_test_loader, test_batch_size=args.test_batch_size, criterion=criterion,
+         mode="targetted-task", dataset=args.dataset, poison_type=args.poison_type)
 
     # let's remain a copy of the global model for measuring the norm distance:
     vanilla_model = copy.deepcopy(net_avg)
 
     if args.fl_mode == "fixed-freq":
         arguments = {
-            #"poisoned_emnist_dataset":poisoned_emnist_dataset,
-            "vanilla_model":vanilla_model,
-            "net_avg":net_avg,
-            "net_dataidx_map":net_dataidx_map,
-            "num_nets":args.num_nets,
-            "dataset":args.dataset,
-            "model":args.model,
-            "part_nets_per_round":args.part_nets_per_round,
-            "fl_round":args.fl_round,
-            "local_training_period":args.local_train_period, #5 #1
-            "adversarial_local_training_period":args.adversarial_local_training_period,
-            "args_lr":args.lr,
-            "args_gamma":args.gamma,
-            "attacking_fl_rounds":[i for i in range(1, args.fl_round + 1) if (i-1)%10 == 0], #"attacking_fl_rounds":[i for i in range(1, fl_round + 1)], #"attacking_fl_rounds":[1],
-            #"attacking_fl_rounds":[i for i in range(1, args.fl_round + 1) if (i-1)%100 == 0], #"attacking_fl_rounds":[i for i in range(1, fl_round + 1)], #"attacking_fl_rounds":[1],
-            "num_dps_poisoned_dataset":num_dps_poisoned_dataset,
-            "poisoned_emnist_train_loader":poisoned_train_loader,
-            "clean_train_loader":clean_train_loader,
-            "vanilla_emnist_test_loader":vanilla_test_loader,
-            "targetted_task_test_loader":targetted_task_test_loader,
-            "batch_size":args.batch_size,
-            "test_batch_size":args.test_batch_size,
-            "log_interval":args.log_interval,
-            "defense_technique":args.defense_method,
-            "attack_method":args.attack_method,
-            "eps":args.eps,
-            "norm_bound":args.norm_bound,
-            "poison_type":args.poison_type,
-            "device":device,
-            "model_replacement":args.model_replacement,
-            "project_frequency":args.project_frequency,
-            "adv_lr":args.adv_lr,
-            "prox_attack":args.prox_attack,
-            "attack_case":args.attack_case,
-            "stddev":args.stddev,
+            # "poisoned_emnist_dataset":poisoned_emnist_dataset,
+            "vanilla_model": vanilla_model,
+            "net_avg": net_avg,
+            "net_dataidx_map": net_dataidx_map,
+            "num_nets": args.num_nets,
+            "dataset": args.dataset,
+            "model": args.model,
+            "part_nets_per_round": args.part_nets_per_round,
+            "fl_round": args.fl_round,
+            "local_training_period": args.local_train_period,  # 5 #1
+            "adversarial_local_training_period": args.adversarial_local_training_period,
+            "args_lr": args.lr,
+            "args_gamma": args.gamma,
+            "attacking_fl_rounds": [i for i in range(1, args.fl_round + 1) if (i - 1) % 10 == 0],
+            # "attacking_fl_rounds":[i for i in range(1, fl_round + 1)], #"attacking_fl_rounds":[1],
+            # "attacking_fl_rounds":[i for i in range(1, args.fl_round + 1) if (i-1)%100 == 0],
+            # "attacking_fl_rounds":[i for i in range(1, fl_round + 1)], #"attacking_fl_rounds":[1],
+            "num_dps_poisoned_dataset": num_dps_poisoned_dataset,
+            "poisoned_emnist_train_loader": poisoned_train_loader,
+            "clean_train_loader": clean_train_loader,
+            "vanilla_emnist_test_loader": vanilla_test_loader,
+            "targetted_task_test_loader": targetted_task_test_loader,
+            "batch_size": args.batch_size,
+            "test_batch_size": args.test_batch_size,
+            "log_interval": args.log_interval,
+            "defense_technique": args.defense_method,
+            "attack_method": args.attack_method,
+            "eps": args.eps,
+            "norm_bound": args.norm_bound,
+            "poison_type": args.poison_type,
+            "device": device,
+            "model_replacement": args.model_replacement,
+            "project_frequency": args.project_frequency,
+            "adv_lr": args.adv_lr,
+            "prox_attack": args.prox_attack,
+            "attack_case": args.attack_case,
+            "stddev": args.stddev,
         }
 
         frequency_fl_trainer = FrequencyFederatedLearningTrainer(arguments=arguments)
         frequency_fl_trainer.run()
+
     elif args.fl_mode == "fixed-pool":
         arguments = {
-            #"poisoned_emnist_dataset":poisoned_emnist_dataset,
-            "vanilla_model":vanilla_model,
-            "net_avg":net_avg,
-            "net_dataidx_map":net_dataidx_map,
-            "num_nets":args.num_nets,
-            "dataset":args.dataset,
-            "model":args.model,
-            "part_nets_per_round":args.part_nets_per_round,
-            "attacker_pool_size":args.attacker_pool_size,
-            "fl_round":args.fl_round,
-            "local_training_period":args.local_train_period,
-            "adversarial_local_training_period":args.adversarial_local_training_period,
-            "args_lr":args.lr,
-            "args_gamma":args.gamma,
-            "num_dps_poisoned_dataset":num_dps_poisoned_dataset,
-            "poisoned_emnist_train_loader":poisoned_train_loader,
-            "clean_train_loader":clean_train_loader,
-            "vanilla_emnist_test_loader":vanilla_test_loader,
-            "targetted_task_test_loader":targetted_task_test_loader,
-            "batch_size":args.batch_size,
-            "test_batch_size":args.test_batch_size,
-            "log_interval":args.log_interval,
-            "defense_technique":args.defense_method,
-            "attack_method":args.attack_method,
-            "eps":args.eps,
-            "norm_bound":args.norm_bound,
-            "poison_type":args.poison_type,
-            "device":device,
-            "model_replacement":args.model_replacement,
-            "project_frequency":args.project_frequency,
-            "adv_lr":args.adv_lr,
-            "prox_attack":args.prox_attack,
-            "attack_case":args.attack_case,
-            "stddev":args.stddev,
-     }
+            # "poisoned_emnist_dataset":poisoned_emnist_dataset,
+            "vanilla_model": vanilla_model,
+            "net_avg": net_avg,
+            "net_dataidx_map": net_dataidx_map,
+            "num_nets": args.num_nets,
+            "dataset": args.dataset,
+            "model": args.model,
+            "part_nets_per_round": args.part_nets_per_round,
+            "attacker_pool_size": args.attacker_pool_size,
+            "fl_round": args.fl_round,
+            "local_training_period": args.local_train_period,
+            "adversarial_local_training_period": args.adversarial_local_training_period,
+            "args_lr": args.lr,
+            "args_gamma": args.gamma,
+            "num_dps_poisoned_dataset": num_dps_poisoned_dataset,
+            "poisoned_emnist_train_loader": poisoned_train_loader,
+            "clean_train_loader": clean_train_loader,
+            "vanilla_emnist_test_loader": vanilla_test_loader,
+            "targetted_task_test_loader": targetted_task_test_loader,
+            "batch_size": args.batch_size,
+            "test_batch_size": args.test_batch_size,
+            "log_interval": args.log_interval,
+            "defense_technique": args.defense_method,
+            "attack_method": args.attack_method,
+            "eps": args.eps,
+            "norm_bound": args.norm_bound,
+            "poison_type": args.poison_type,
+            "device": device,
+            "model_replacement": args.model_replacement,
+            "project_frequency": args.project_frequency,
+            "adv_lr": args.adv_lr,
+            "prox_attack": args.prox_attack,
+            "attack_case": args.attack_case,
+            "stddev": args.stddev
+        }
 
         fixed_pool_fl_trainer = FixedPoolFederatedLearningTrainer(arguments=arguments)
         fixed_pool_fl_trainer.run()
@@ -270,7 +275,7 @@ if __name__ == "__main__":
     #                        transforms.Normalize((0.1307,), (0.3081,))
     #                    ]))
 
-    # # okay, so what we really need here is just three loaders: i.e. poisoned training loader, poisoned test loader, normal test loader
+    # # what we need here is just 3 loaders: i.e. poisoned training loader, poisoned test loader, normal test loader
     # poisoned_emnist_train_loader = torch.utils.data.DataLoader(poisoned_emnist_dataset,
     #      batch_size=args.batch_size, shuffle=True, **kwargs)
     # vanilla_emnist_test_loader = torch.utils.data.DataLoader(emnist_test_dataset,
