@@ -15,7 +15,7 @@ from utils import *
 from fl_trainer import *
 from models.vgg import get_vgg_model
 
-READ_CKPT = True
+READ_CKPT = False
 
 
 # helper function because otherwise non-empty strings
