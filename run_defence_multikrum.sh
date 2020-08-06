@@ -10,7 +10,7 @@ python simulated_averaging.py --fraction 0.1 \
 --model vgg16 \
 --fl_mode fixed-freq \
 --attacker_pool_size 100 \
---defense_method krum \
+--defense_method multi-krum\
 --attack_method blackbox \
 --attack_case edge-case \
 --model_replacement False \
