@@ -3,7 +3,7 @@ python simulated_averaging.py --fraction 0.1 \
 --lr 0.02 \
 --gamma 0.998 \
 --num_nets 200 \
---fl_round 500 \
+--fl_round 200 \
 --part_nets_per_round 10 \
 --local_train_period 2 \
 --adversarial_local_training_period 2 \

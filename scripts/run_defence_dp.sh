@@ -10,7 +10,7 @@ python simulated_averaging.py --fraction 0.1 \
 --model vgg16 \
 --fl_mode fixed-freq \
 --attacker_pool_size 100 \
---defense_method krum \
+--defense_method weak-dp \
 --attack_method blackbox \
 --attack_case edge-case \
 --model_replacement False \
@@ -22,4 +22,4 @@ python simulated_averaging.py --fraction 0.1 \
 --poison_type southwest \
 --norm_bound 2 \
 --device=cuda:1 \
-> logs/southwest_vgg16_blackbox_krum_log 2>&1
+> logs/southwest_vgg16_blackbox_no_defense_log 2>&1
