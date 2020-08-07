@@ -15,6 +15,16 @@ Files already downloaded and verified
 Files already downloaded and verified
 Files already downloaded and verified
 Traceback (most recent call last):
-  File "simulated_averaging.py", line 150, in <module>
-    with open("./checkpoint/Cifar10_{}_10epoch.pt".format(args.model.upper()), "rb") as ckpt_file:
-FileNotFoundError: [Errno 2] No such file or directory: './checkpoint/Cifar10_VGG16_10epoch.pt'
+  File "simulated_averaging.py", line 158, in <module>
+    net_avg = get_vgg_model(args.model).to(device)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 443, in to
+    return self._apply(convert)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 203, in _apply
+    module._apply(fn)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 203, in _apply
+    module._apply(fn)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 225, in _apply
+    param_applied = fn(param)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/modules/module.py", line 441, in convert
+    return t.to(device, dtype if t.is_floating_point() else None, non_blocking)
+KeyboardInterrupt
