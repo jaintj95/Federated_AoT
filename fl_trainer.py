@@ -733,6 +733,7 @@ class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
         for flr in range(1, self.fl_round+1):
             # randomly select participating clients
             # in this current version, we sample `part_nets_per_round` per FL round since we assume attacker will always participates
+            g_user_indices = []
             selected_node_indices = np.random.choice(self.num_nets, size=self.part_nets_per_round, replace=False)
 
             selected_attackers = [idx for idx in selected_node_indices if idx in self.__attacker_pool]
@@ -785,6 +786,7 @@ class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
                     else:
                         NotImplementedError("Unsupported attack case ...")
                 
+                g_user_indices.append(global_user_idx)
                 logger.info("@@@@@@@@ Working on client (global-index): {}, which {}-th user in the current round".format(global_user_idx, net_idx))
 
                 #criterion = nn.CrossEntropyLoss()
