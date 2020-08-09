@@ -1,6 +1,611 @@
+INFO:root:Running Attack of the tails with args: Namespace(adv_lr=0.02, adversarial_local_training_period=2, attack_case='edge-case', attack_method='blackbox', attacker_pool_size=100, batch_size=32, dataset='cifar10', defense_method='weak-dp', device='cuda:1', epochs=14, eps=2.0, fl_mode='fixed-pool', fl_round=250, fraction=0.1, gamma=0.998, local_train_period=2, log_interval=100, lr=0.02, model='vgg16', model_replacement=False, no_cuda=False, norm_bound=2.0, num_nets=500, part_nets_per_round=50, poison_type='southwest', project_frequency=10, prox_attack=False, rand_seed=7, seed=1, stddev=0.025, test_batch_size=1000)
+INFO:root:cuda
+INFO:root:==> Building model..
+INFO:root:Seeded everything
+INFO:root:OOD (Southwest Airline) train-data shape we collected: (784, 32, 32, 3)
+INFO:root:OOD (Southwest Airline) test-data shape we collected: (196, 32, 32, 3)
+INFO:root:!!!!!!!!!!!Num poisoned data points in the mixed dataset: 100
+INFO:root:!!!!!!!!!!!Num clean data points in the mixed dataset: 400
+INFO:root:(500, 32, 32, 3)
+INFO:root:(500,)
+INFO:root:2757
+INFO:root:GET_VGG_MODEL: Fetch vgg16
+INFO:root:Test the model performance on the entire task before FL process ... 
+INFO:root:Accuracy of plane : 0.00 %
+INFO:root:Accuracy of   car : 0.00 %
+INFO:root:Accuracy of  bird : 0.00 %
+INFO:root:Accuracy of   cat : 0.00 %
+INFO:root:Accuracy of  deer : 0.00 %
+INFO:root:Accuracy of   dog : 0.00 %
+INFO:root:Accuracy of  frog : 0.00 %
+INFO:root:Accuracy of horse : 100.00 %
+INFO:root:Accuracy of  ship : 0.00 %
+INFO:root:Accuracy of truck : 0.00 %
+INFO:root:
+Test set: Average loss: 0.0023, Accuracy: 1000/10000 (10.00%)
+
+INFO:root:#### Targetted Accuracy of truck : 0.00 %
+INFO:root:Posion type! southwest
+INFO:root:Selected Attackers in FL iteration-1: [269, 330, 171, 478, 255, 110, 241, 298, 22]
+INFO:root:Net freq: [0.01609355100150515, 0.01076762764848906, 0.0055574852379298365, 0.012851684612712747, 0.011693875188144031, 0.012735903670255877, 0.005904828065300452, 0.0578904712284358, 0.0033576473312492763, 0.0578904712284358, 0.0578904712284358, 0.0578904712284358, 0.0578904712284358, 0.003704990158619891, 0.010651846706032187, 0.012272779900428389, 0.012504341785342132, 0.0578904712284358, 0.006599513720041681, 0.01377793215236772, 0.0578904712284358, 0.008104665971981012, 0.00868357068426537, 0.01516730346185018, 0.011925437073057774, 0.012620122727799004, 0.007178418432326039, 0.014241055922195206, 0.011809656130600903, 0.0578904712284358, 0.01076762764848906, 0.02084056964223689, 0.01157809424568716, 0.0578904712284358, 0.012388560842885261, 0.011693875188144031, 0.012620122727799004, 0.017598703253444484, 0.010651846706032187, 0.015051522519393307, 0.014356836864652079, 0.014588398749565822, 0.017135579483616995, 0.021651036239434988, 0.010651846706032187, 0.006020609007757323, 0.0045154567558179926, 0.01308324649762649, 0.012272779900428389, 0.013314808382540233], FL round: 1 with adversary
+INFO:root:################## Starting fl round: 1
+INFO:root:@@@@@@@@ Working on client (global-index): 376, which 0-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/139 (0%)]	Loss: 2.290344
+INFO:root:Train Epoch: 2 [0/139 (0%)]	Loss: 2.163438
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.5971139669418335
+INFO:root:@@@@@@@@ Working on client (global-index): 211, which 1-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/93 (0%)]	Loss: 2.307021
+INFO:root:Train Epoch: 2 [0/93 (0%)]	Loss: 2.287569
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.1288110613822937
+INFO:root:@@@@@@@@ Working on client (global-index): 415, which 2-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/48 (0%)]	Loss: 2.304575
+INFO:root:Train Epoch: 2 [0/48 (0%)]	Loss: 2.296068
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.05944095924496651
+INFO:root:@@@@@@@@ Working on client (global-index): 445, which 3-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/111 (0%)]	Loss: 2.316250
+INFO:root:Train Epoch: 2 [0/111 (0%)]	Loss: 2.238355
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.374144971370697
+INFO:root:@@@@@@@@ Working on client (global-index): 454, which 4-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/101 (0%)]	Loss: 2.302773
+INFO:root:Train Epoch: 2 [0/101 (0%)]	Loss: 2.278454
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.24311603605747223
+INFO:root:@@@@@@@@ Working on client (global-index): 429, which 5-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/110 (0%)]	Loss: 2.292264
+INFO:root:Train Epoch: 2 [0/110 (0%)]	Loss: 2.267934
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.20566628873348236
+INFO:root:@@@@@@@@ Working on client (global-index): 461, which 6-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/51 (0%)]	Loss: 2.293667
+INFO:root:Train Epoch: 2 [0/51 (0%)]	Loss: 2.278112
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.08055605739355087
+INFO:root:@@@@@@@@ Working on client (global-index): 269, which 7-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/500 (0%)]	Loss: 2.302238
+INFO:root:Train Epoch: 2 [0/500 (0%)]	Loss: 2.121869
+INFO:root:Accuracy of plane : 0.00 %
+INFO:root:Accuracy of   car : 0.00 %
+INFO:root:Accuracy of  bird : 0.00 %
+INFO:root:Accuracy of   cat : 0.00 %
+INFO:root:Accuracy of  deer : 0.00 %
+INFO:root:Accuracy of   dog : 0.00 %
+INFO:root:Accuracy of  frog : 0.00 %
+INFO:root:Accuracy of horse : 0.00 %
+INFO:root:Accuracy of  ship : 0.00 %
+INFO:root:Accuracy of truck : 100.00 %
+INFO:root:
+Test set: Average loss: 0.0023, Accuracy: 1000/10000 (10.00%)
+
+INFO:root:#### Targetted Accuracy of truck : 100.00 %
+INFO:root:===> ND `|w_bad-w_g|` in local epoch: 2 | FL round: 1 |, is 0.9375839233398438
+INFO:root:@@@@@@@@ Working on client (global-index): 111, which 8-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/29 (0%)]	Loss: 2.305025
+INFO:root:Train Epoch: 2 [0/29 (0%)]	Loss: 2.300621
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.03439817577600479
+INFO:root:@@@@@@@@ Working on client (global-index): 330, which 9-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/500 (0%)]	Loss: 2.301340
+INFO:root:Train Epoch: 2 [0/500 (0%)]	Loss: 2.077645
+INFO:root:Accuracy of plane : 0.00 %
+INFO:root:Accuracy of   car : 0.00 %
+INFO:root:Accuracy of  bird : 0.00 %
+INFO:root:Accuracy of   cat : 0.00 %
+INFO:root:Accuracy of  deer : 0.00 %
+INFO:root:Accuracy of   dog : 0.00 %
+INFO:root:Accuracy of  frog : 0.00 %
+INFO:root:Accuracy of horse : 0.00 %
+INFO:root:Accuracy of  ship : 0.00 %
+INFO:root:Accuracy of truck : 100.00 %
+INFO:root:
+Test set: Average loss: 0.0026, Accuracy: 1000/10000 (10.00%)
+
+INFO:root:#### Targetted Accuracy of truck : 100.00 %
+INFO:root:===> ND `|w_bad-w_g|` in local epoch: 2 | FL round: 1 |, is 0.9802312254905701
+INFO:root:@@@@@@@@ Working on client (global-index): 171, which 10-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/500 (0%)]	Loss: 2.298402
+INFO:root:Train Epoch: 2 [0/500 (0%)]	Loss: 2.051109
+INFO:root:Accuracy of plane : 0.00 %
+INFO:root:Accuracy of   car : 0.00 %
+INFO:root:Accuracy of  bird : 0.00 %
+INFO:root:Accuracy of   cat : 0.00 %
+INFO:root:Accuracy of  deer : 0.00 %
+INFO:root:Accuracy of   dog : 0.00 %
+INFO:root:Accuracy of  frog : 0.00 %
+INFO:root:Accuracy of horse : 0.00 %
+INFO:root:Accuracy of  ship : 0.00 %
+INFO:root:Accuracy of truck : 100.00 %
+INFO:root:
+Test set: Average loss: 0.0024, Accuracy: 1000/10000 (10.00%)
+
+INFO:root:#### Targetted Accuracy of truck : 100.00 %
+INFO:root:===> ND `|w_bad-w_g|` in local epoch: 2 | FL round: 1 |, is 0.9894345998764038
+INFO:root:@@@@@@@@ Working on client (global-index): 478, which 11-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/500 (0%)]	Loss: 2.306417
+INFO:root:Train Epoch: 2 [0/500 (0%)]	Loss: 2.247995
+INFO:root:Accuracy of plane : 0.00 %
+INFO:root:Accuracy of   car : 0.00 %
+INFO:root:Accuracy of  bird : 0.00 %
+INFO:root:Accuracy of   cat : 0.00 %
+INFO:root:Accuracy of  deer : 0.00 %
+INFO:root:Accuracy of   dog : 0.00 %
+INFO:root:Accuracy of  frog : 0.00 %
+INFO:root:Accuracy of horse : 0.00 %
+INFO:root:Accuracy of  ship : 0.00 %
+INFO:root:Accuracy of truck : 100.00 %
+INFO:root:
+Test set: Average loss: 0.0025, Accuracy: 1000/10000 (10.00%)
+
+INFO:root:#### Targetted Accuracy of truck : 100.00 %
+INFO:root:===> ND `|w_bad-w_g|` in local epoch: 2 | FL round: 1 |, is 1.0209673643112183
+INFO:root:@@@@@@@@ Working on client (global-index): 255, which 12-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/500 (0%)]	Loss: 2.305691
+INFO:root:Train Epoch: 2 [0/500 (0%)]	Loss: 2.148775
+INFO:root:Accuracy of plane : 0.00 %
+INFO:root:Accuracy of   car : 0.00 %
+INFO:root:Accuracy of  bird : 0.00 %
+INFO:root:Accuracy of   cat : 0.00 %
+INFO:root:Accuracy of  deer : 0.00 %
+INFO:root:Accuracy of   dog : 0.00 %
+INFO:root:Accuracy of  frog : 0.00 %
+INFO:root:Accuracy of horse : 0.00 %
+INFO:root:Accuracy of  ship : 0.00 %
+INFO:root:Accuracy of truck : 100.00 %
+INFO:root:
+Test set: Average loss: 0.0026, Accuracy: 1000/10000 (10.00%)
+
+INFO:root:#### Targetted Accuracy of truck : 100.00 %
+INFO:root:===> ND `|w_bad-w_g|` in local epoch: 2 | FL round: 1 |, is 1.0691279172897339
+INFO:root:@@@@@@@@ Working on client (global-index): 316, which 13-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/32 (0%)]	Loss: 2.302270
+INFO:root:Train Epoch: 2 [0/32 (0%)]	Loss: 2.302998
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.016578877344727516
+INFO:root:@@@@@@@@ Working on client (global-index): 116, which 14-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/92 (0%)]	Loss: 2.299078
+INFO:root:Train Epoch: 2 [0/92 (0%)]	Loss: 2.266698
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.20802031457424164
+INFO:root:@@@@@@@@ Working on client (global-index): 368, which 15-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/106 (0%)]	Loss: 2.303919
+INFO:root:Train Epoch: 2 [0/106 (0%)]	Loss: 2.274535
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.22860760986804962
+INFO:root:@@@@@@@@ Working on client (global-index): 237, which 16-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/108 (0%)]	Loss: 2.312869
+INFO:root:Train Epoch: 2 [0/108 (0%)]	Loss: 2.261070
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.2958097755908966
+INFO:root:@@@@@@@@ Working on client (global-index): 110, which 17-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/500 (0%)]	Loss: 2.303122
+INFO:root:Train Epoch: 2 [0/500 (0%)]	Loss: 2.081835
+INFO:root:Accuracy of plane : 0.00 %
+INFO:root:Accuracy of   car : 0.00 %
+INFO:root:Accuracy of  bird : 0.00 %
+INFO:root:Accuracy of   cat : 0.00 %
+INFO:root:Accuracy of  deer : 0.00 %
+INFO:root:Accuracy of   dog : 0.00 %
+INFO:root:Accuracy of  frog : 0.00 %
+INFO:root:Accuracy of horse : 0.00 %
+INFO:root:Accuracy of  ship : 0.00 %
+INFO:root:Accuracy of truck : 100.00 %
+INFO:root:
+Test set: Average loss: 0.0024, Accuracy: 1000/10000 (10.00%)
+
+INFO:root:#### Targetted Accuracy of truck : 100.00 %
+INFO:root:===> ND `|w_bad-w_g|` in local epoch: 2 | FL round: 1 |, is 1.022589921951294
+INFO:root:@@@@@@@@ Working on client (global-index): 181, which 18-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/57 (0%)]	Loss: 2.312675
+INFO:root:Train Epoch: 2 [0/57 (0%)]	Loss: 2.297856
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.1070735976099968
+INFO:root:@@@@@@@@ Working on client (global-index): 299, which 19-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/119 (0%)]	Loss: 2.297748
+INFO:root:Train Epoch: 2 [0/119 (0%)]	Loss: 2.236410
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.324373334646225
+INFO:root:@@@@@@@@ Working on client (global-index): 241, which 20-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/500 (0%)]	Loss: 2.298147
+INFO:root:Train Epoch: 2 [0/500 (0%)]	Loss: 2.005717
+INFO:root:Accuracy of plane : 0.00 %
+INFO:root:Accuracy of   car : 0.00 %
+INFO:root:Accuracy of  bird : 0.00 %
+INFO:root:Accuracy of   cat : 0.00 %
+INFO:root:Accuracy of  deer : 0.00 %
+INFO:root:Accuracy of   dog : 0.00 %
+INFO:root:Accuracy of  frog : 0.00 %
+INFO:root:Accuracy of horse : 0.00 %
+INFO:root:Accuracy of  ship : 0.00 %
+INFO:root:Accuracy of truck : 100.00 %
+INFO:root:
+Test set: Average loss: 0.0023, Accuracy: 1000/10000 (10.00%)
+
+INFO:root:#### Targetted Accuracy of truck : 100.00 %
+INFO:root:===> ND `|w_bad-w_g|` in local epoch: 2 | FL round: 1 |, is 1.0253595113754272
+INFO:root:@@@@@@@@ Working on client (global-index): 36, which 21-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/70 (0%)]	Loss: 2.305912
+INFO:root:Train Epoch: 2 [0/70 (0%)]	Loss: 2.274818
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.18275929987430573
+INFO:root:@@@@@@@@ Working on client (global-index): 1, which 22-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/75 (0%)]	Loss: 2.303526
+INFO:root:Train Epoch: 2 [0/75 (0%)]	Loss: 2.239373
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.28184974193573
+INFO:root:@@@@@@@@ Working on client (global-index): 213, which 23-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/131 (0%)]	Loss: 2.272441
+INFO:root:Train Epoch: 2 [0/131 (0%)]	Loss: 2.034951
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.8604331016540527
+INFO:root:@@@@@@@@ Working on client (global-index): 163, which 24-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/103 (0%)]	Loss: 2.298789
+INFO:root:Train Epoch: 2 [0/103 (0%)]	Loss: 2.251082
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.3216443359851837
+INFO:root:@@@@@@@@ Working on client (global-index): 456, which 25-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/109 (0%)]	Loss: 2.301748
+INFO:root:Train Epoch: 2 [0/109 (0%)]	Loss: 2.150505
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.493282288312912
+INFO:root:@@@@@@@@ Working on client (global-index): 297, which 26-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/62 (0%)]	Loss: 2.313971
+INFO:root:Train Epoch: 2 [0/62 (0%)]	Loss: 2.301691
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.09338753670454025
+INFO:root:@@@@@@@@ Working on client (global-index): 457, which 27-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/123 (0%)]	Loss: 2.312097
+INFO:root:Train Epoch: 2 [0/123 (0%)]	Loss: 2.259020
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.3207976222038269
+INFO:root:@@@@@@@@ Working on client (global-index): 221, which 28-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/102 (0%)]	Loss: 2.290313
+INFO:root:Train Epoch: 2 [0/102 (0%)]	Loss: 2.230145
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.3090217113494873
+INFO:root:@@@@@@@@ Working on client (global-index): 298, which 29-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/500 (0%)]	Loss: 2.306083
+INFO:root:Train Epoch: 2 [0/500 (0%)]	Loss: 2.072916
+INFO:root:Accuracy of plane : 0.00 %
+INFO:root:Accuracy of   car : 0.00 %
+INFO:root:Accuracy of  bird : 0.00 %
+INFO:root:Accuracy of   cat : 0.00 %
+INFO:root:Accuracy of  deer : 0.00 %
+INFO:root:Accuracy of   dog : 0.00 %
+INFO:root:Accuracy of  frog : 0.00 %
+INFO:root:Accuracy of horse : 0.00 %
+INFO:root:Accuracy of  ship : 0.00 %
+INFO:root:Accuracy of truck : 100.00 %
+INFO:root:
+Test set: Average loss: 0.0026, Accuracy: 1000/10000 (10.00%)
+
+INFO:root:#### Targetted Accuracy of truck : 100.00 %
+INFO:root:===> ND `|w_bad-w_g|` in local epoch: 2 | FL round: 1 |, is 1.033902645111084
+INFO:root:@@@@@@@@ Working on client (global-index): 425, which 30-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/93 (0%)]	Loss: 2.300779
+INFO:root:Train Epoch: 2 [0/93 (0%)]	Loss: 2.259474
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.22428500652313232
+INFO:root:@@@@@@@@ Working on client (global-index): 434, which 31-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/180 (0%)]	Loss: 2.303467
+INFO:root:Train Epoch: 2 [0/180 (0%)]	Loss: 2.169166
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.7495118975639343
+INFO:root:@@@@@@@@ Working on client (global-index): 412, which 32-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/100 (0%)]	Loss: 2.294104
+INFO:root:Train Epoch: 2 [0/100 (0%)]	Loss: 2.232084
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.3209753930568695
+INFO:root:@@@@@@@@ Working on client (global-index): 22, which 33-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/500 (0%)]	Loss: 2.301697
+INFO:root:Train Epoch: 2 [0/500 (0%)]	Loss: 1.796583
+INFO:root:Accuracy of plane : 0.00 %
+INFO:root:Accuracy of   car : 0.00 %
+INFO:root:Accuracy of  bird : 0.00 %
+INFO:root:Accuracy of   cat : 0.00 %
+INFO:root:Accuracy of  deer : 0.00 %
+INFO:root:Accuracy of   dog : 0.00 %
+INFO:root:Accuracy of  frog : 0.00 %
+INFO:root:Accuracy of horse : 0.00 %
+INFO:root:Accuracy of  ship : 0.00 %
+INFO:root:Accuracy of truck : 100.00 %
+INFO:root:
+Test set: Average loss: 0.0024, Accuracy: 1000/10000 (10.00%)
+
+INFO:root:#### Targetted Accuracy of truck : 100.00 %
+INFO:root:===> ND `|w_bad-w_g|` in local epoch: 2 | FL round: 1 |, is 1.0434664487838745
+INFO:root:@@@@@@@@ Working on client (global-index): 129, which 34-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/107 (0%)]	Loss: 2.297800
+INFO:root:Train Epoch: 2 [0/107 (0%)]	Loss: 2.251932
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.26704487204551697
+INFO:root:@@@@@@@@ Working on client (global-index): 66, which 35-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/101 (0%)]	Loss: 2.309798
+INFO:root:Train Epoch: 2 [0/101 (0%)]	Loss: 2.219786
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.4155563712120056
+INFO:root:@@@@@@@@ Working on client (global-index): 277, which 36-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/109 (0%)]	Loss: 2.291663
+INFO:root:Train Epoch: 2 [0/109 (0%)]	Loss: 2.245481
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.29934853315353394
+INFO:root:@@@@@@@@ Working on client (global-index): 100, which 37-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/152 (0%)]	Loss: 2.306758
+INFO:root:Train Epoch: 2 [0/152 (0%)]	Loss: 2.238979
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.4400974214076996
+INFO:root:@@@@@@@@ Working on client (global-index): 162, which 38-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/92 (0%)]	Loss: 2.318143
+INFO:root:Train Epoch: 2 [0/92 (0%)]	Loss: 2.279320
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.18736502528190613
+INFO:root:@@@@@@@@ Working on client (global-index): 483, which 39-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/130 (0%)]	Loss: 2.300349
+INFO:root:Train Epoch: 2 [0/130 (0%)]	Loss: 2.186252
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.5667957067489624
+INFO:root:@@@@@@@@ Working on client (global-index): 367, which 40-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/124 (0%)]	Loss: 2.310932
+INFO:root:Train Epoch: 2 [0/124 (0%)]	Loss: 2.215859
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.40483951568603516
+INFO:root:@@@@@@@@ Working on client (global-index): 43, which 41-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/126 (0%)]	Loss: 2.310619
+INFO:root:Train Epoch: 2 [0/126 (0%)]	Loss: 2.260338
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.32631972432136536
+INFO:root:@@@@@@@@ Working on client (global-index): 451, which 42-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/148 (0%)]	Loss: 2.311083
+INFO:root:Train Epoch: 2 [0/148 (0%)]	Loss: 2.141893
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.6705975532531738
+INFO:root:@@@@@@@@ Working on client (global-index): 310, which 43-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/187 (0%)]	Loss: 2.318745
+INFO:root:Train Epoch: 2 [0/187 (0%)]	Loss: 2.021638
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 1.0165024995803833
+INFO:root:@@@@@@@@ Working on client (global-index): 64, which 44-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/92 (0%)]	Loss: 2.308444
+INFO:root:Train Epoch: 2 [0/92 (0%)]	Loss: 2.279491
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.1946573257446289
+INFO:root:@@@@@@@@ Working on client (global-index): 476, which 45-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/52 (0%)]	Loss: 2.300681
+INFO:root:Train Epoch: 2 [0/52 (0%)]	Loss: 2.281389
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.1058877632021904
+INFO:root:@@@@@@@@ Working on client (global-index): 68, which 46-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/39 (0%)]	Loss: 2.316850
+INFO:root:Train Epoch: 2 [0/39 (0%)]	Loss: 2.297647
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.11262323707342148
+INFO:root:@@@@@@@@ Working on client (global-index): 49, which 47-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/113 (0%)]	Loss: 2.300878
+INFO:root:Train Epoch: 2 [0/113 (0%)]	Loss: 2.269469
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.20999878644943237
+INFO:root:@@@@@@@@ Working on client (global-index): 8, which 48-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/106 (0%)]	Loss: 2.285132
+INFO:root:Train Epoch: 2 [0/106 (0%)]	Loss: 2.237985
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.3353145718574524
+INFO:root:@@@@@@@@ Working on client (global-index): 243, which 49-th user in the current round
+INFO:root:Effective lr in FL round: 1 is 0.02
+INFO:root:Train Epoch: 1 [0/115 (0%)]	Loss: 2.304098
+INFO:root:Train Epoch: 2 [0/115 (0%)]	Loss: 2.201256
+INFO:root:===> ND `|w_normal-w_g|` in local epoch: 2 | FL round: 1 |, is 0.4203256368637085
+INFO:root:Norm Weight Diff: 0.5971139669418335, Norm Clipped Weight Diff 0.5971139669418335
+INFO:root:Norm Weight Diff: 0.1288110613822937, Norm Clipped Weight Diff 0.1288110613822937
+INFO:root:Norm Weight Diff: 0.05944095551967621, Norm Clipped Weight Diff 0.05944095551967621
+INFO:root:Norm Weight Diff: 0.3741450011730194, Norm Clipped Weight Diff 0.3741450011730194
+INFO:root:Norm Weight Diff: 0.24311605095863342, Norm Clipped Weight Diff 0.24311605095863342
+INFO:root:Norm Weight Diff: 0.20566628873348236, Norm Clipped Weight Diff 0.20566628873348236
+INFO:root:Norm Weight Diff: 0.08055605739355087, Norm Clipped Weight Diff 0.08055605739355087
+INFO:root:Norm Weight Diff: 0.9375839829444885, Norm Clipped Weight Diff 0.9375839829444885
+INFO:root:Norm Weight Diff: 0.03439817577600479, Norm Clipped Weight Diff 0.03439817577600479
+INFO:root:Norm Weight Diff: 0.9802312850952148, Norm Clipped Weight Diff 0.9802312850952148
+INFO:root:Norm Weight Diff: 0.9894345998764038, Norm Clipped Weight Diff 0.9894345998764038
+INFO:root:Norm Weight Diff: 1.0209673643112183, Norm Clipped Weight Diff 1.0209673643112183
+INFO:root:Norm Weight Diff: 1.0691279172897339, Norm Clipped Weight Diff 1.0691279172897339
+INFO:root:Norm Weight Diff: 0.016578877344727516, Norm Clipped Weight Diff 0.016578877344727516
+INFO:root:Norm Weight Diff: 0.20802031457424164, Norm Clipped Weight Diff 0.20802031457424164
+INFO:root:Norm Weight Diff: 0.22860762476921082, Norm Clipped Weight Diff 0.22860762476921082
+INFO:root:Norm Weight Diff: 0.2958097457885742, Norm Clipped Weight Diff 0.2958097457885742
+INFO:root:Norm Weight Diff: 1.0225898027420044, Norm Clipped Weight Diff 1.0225898027420044
+INFO:root:Norm Weight Diff: 0.10707360506057739, Norm Clipped Weight Diff 0.10707360506057739
+INFO:root:Norm Weight Diff: 0.324373334646225, Norm Clipped Weight Diff 0.324373334646225
+INFO:root:Norm Weight Diff: 1.0253595113754272, Norm Clipped Weight Diff 1.0253595113754272
+INFO:root:Norm Weight Diff: 0.18275929987430573, Norm Clipped Weight Diff 0.18275929987430573
+INFO:root:Norm Weight Diff: 0.28184974193573, Norm Clipped Weight Diff 0.28184974193573
+INFO:root:Norm Weight Diff: 0.860433042049408, Norm Clipped Weight Diff 0.860433042049408
+INFO:root:Norm Weight Diff: 0.3216443359851837, Norm Clipped Weight Diff 0.3216443359851837
+INFO:root:Norm Weight Diff: 0.4932823181152344, Norm Clipped Weight Diff 0.4932823181152344
+INFO:root:Norm Weight Diff: 0.09338753670454025, Norm Clipped Weight Diff 0.09338753670454025
+INFO:root:Norm Weight Diff: 0.3207976222038269, Norm Clipped Weight Diff 0.3207976222038269
+INFO:root:Norm Weight Diff: 0.3090217113494873, Norm Clipped Weight Diff 0.3090217113494873
+INFO:root:Norm Weight Diff: 1.0339025259017944, Norm Clipped Weight Diff 1.0339025259017944
+INFO:root:Norm Weight Diff: 0.22428502142429352, Norm Clipped Weight Diff 0.22428502142429352
+INFO:root:Norm Weight Diff: 0.7495118975639343, Norm Clipped Weight Diff 0.7495118975639343
+INFO:root:Norm Weight Diff: 0.3209754228591919, Norm Clipped Weight Diff 0.3209754228591919
+INFO:root:Norm Weight Diff: 1.043466329574585, Norm Clipped Weight Diff 1.043466329574585
+INFO:root:Norm Weight Diff: 0.26704487204551697, Norm Clipped Weight Diff 0.26704487204551697
+INFO:root:Norm Weight Diff: 0.4155563712120056, Norm Clipped Weight Diff 0.4155563712120056
+INFO:root:Norm Weight Diff: 0.29934853315353394, Norm Clipped Weight Diff 0.29934853315353394
+INFO:root:Norm Weight Diff: 0.4400974214076996, Norm Clipped Weight Diff 0.4400974214076996
+INFO:root:Norm Weight Diff: 0.18736501038074493, Norm Clipped Weight Diff 0.18736501038074493
+INFO:root:Norm Weight Diff: 0.5667957067489624, Norm Clipped Weight Diff 0.5667957067489624
+INFO:root:Norm Weight Diff: 0.40483951568603516, Norm Clipped Weight Diff 0.40483951568603516
+INFO:root:Norm Weight Diff: 0.32631972432136536, Norm Clipped Weight Diff 0.32631972432136536
+INFO:root:Norm Weight Diff: 0.6705975532531738, Norm Clipped Weight Diff 0.6705975532531738
+INFO:root:Norm Weight Diff: 1.0165024995803833, Norm Clipped Weight Diff 1.0165024995803833
+INFO:root:Norm Weight Diff: 0.1946573257446289, Norm Clipped Weight Diff 0.1946573257446289
+INFO:root:Norm Weight Diff: 0.1058877632021904, Norm Clipped Weight Diff 0.1058877632021904
+INFO:root:Norm Weight Diff: 0.11262323707342148, Norm Clipped Weight Diff 0.11262323707342148
+INFO:root:Norm Weight Diff: 0.20999878644943237, Norm Clipped Weight Diff 0.20999878644943237
+INFO:root:Norm Weight Diff: 0.33531454205513, Norm Clipped Weight Diff 0.33531454205513
+INFO:root:Norm Weight Diff: 0.4203256666660309, Norm Clipped Weight Diff 0.4203256666660309
+INFO:root:GET_VGG_MODEL: Fetch vgg16
+INFO:root:Weak DP Defense: added noise of norm: 97.61949157714844
+INFO:root:===> ND `|w_avg-w_g|` in local epoch: 0 | FL round: 1 |, is 0.0
+INFO:root:Measuring the accuracy of the averaged global model, FL round: 1 ...
+INFO:root:Accuracy of plane : 0.00 %
+INFO:root:Accuracy of   car : 0.00 %
+INFO:root:Accuracy of  bird : 0.00 %
+INFO:root:Accuracy of   cat : 0.00 %
+INFO:root:Accuracy of  deer : 0.00 %
+INFO:root:Accuracy of   dog : 0.00 %
+INFO:root:Accuracy of  frog : 0.00 %
+INFO:root:Accuracy of horse : 0.00 %
+INFO:root:Accuracy of  ship : 0.00 %
+INFO:root:Accuracy of truck : 100.00 %
+INFO:root:
+Test set: Average loss: 0.0041, Accuracy: 1000/10000 (10.00%)
+
+INFO:root:#### Targetted Accuracy of truck : 100.00 %
+INFO:root:Selected Attackers in FL iteration-2: [6, 257, 452, 349, 152, 428, 79, 224, 482, 178, 241, 385, 186, 86, 5, 110]
+INFO:root:Net freq: [0.009347412151635797, 0.043275056257573136, 0.009087761814090359, 0.008655011251514627, 0.004067855288211875, 0.043275056257573136, 0.043275056257573136, 0.043275056257573136, 0.043275056257573136, 0.005625757313484508, 0.043275056257573136, 0.043275056257573136, 0.043275056257573136, 0.011338064739484162, 0.008741561364029773, 0.008914661589060065, 0.043275056257573136, 0.009520512376666089, 0.043275056257573136, 0.009693612601696383, 0.0025099532629392417, 0.012030465639605331, 0.043275056257573136, 0.012117015752120477, 0.009174311926605505, 0.009260862039120651, 0.009866712826726675, 0.0047602561883330445, 0.009433962264150943, 0.007183659338757141, 0.0036351047256361433, 0.043275056257573136, 0.009607062489181237, 0.007356759563787433, 0.008741561364029773, 0.010991864289423576, 0.043275056257573136, 0.043275056257573136, 0.011338064739484162, 0.008741561364029773, 0.008914661589060065, 0.043275056257573136, 0.016790721827938376, 0.015579020252726328, 0.01090531417690843, 0.011770815302059893, 0.043275056257573136, 0.008655011251514627, 0.0060585078760602385, 0.007183659338757141], FL round: 2 with adversary
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
+Files already downloaded and verified
 Traceback (most recent call last):
-  File "simulated_averaging.py", line 97, in <module>
-    use_cuda = not args.no_cuda and torch.cuda.is_available()
-  File "/usr/local/lib/python3.6/dist-packages/torch/cuda/__init__.py", line 36, in is_available
-    not torch._C._cuda_isDriverSufficient()):
-KeyboardInterrupt
+  File "simulated_averaging.py", line 253, in <module>
+    fixed_pool_fl_trainer.run()
+  File "/mnt/anupam-data/Federated_AoT/fl_trainer.py", line 755, in run
+    net_list = [copy.deepcopy(self.net_avg) for _ in range(self.part_nets_per_round)]
+  File "/mnt/anupam-data/Federated_AoT/fl_trainer.py", line 755, in <listcomp>
+    net_list = [copy.deepcopy(self.net_avg) for _ in range(self.part_nets_per_round)]
+  File "/usr/lib/python3.6/copy.py", line 180, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+  File "/usr/lib/python3.6/copy.py", line 280, in _reconstruct
+    state = deepcopy(state, memo)
+  File "/usr/lib/python3.6/copy.py", line 150, in deepcopy
+    y = copier(x, memo)
+  File "/usr/lib/python3.6/copy.py", line 240, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+  File "/usr/lib/python3.6/copy.py", line 180, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+  File "/usr/lib/python3.6/copy.py", line 306, in _reconstruct
+    value = deepcopy(value, memo)
+  File "/usr/lib/python3.6/copy.py", line 180, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+  File "/usr/lib/python3.6/copy.py", line 280, in _reconstruct
+    state = deepcopy(state, memo)
+  File "/usr/lib/python3.6/copy.py", line 150, in deepcopy
+    y = copier(x, memo)
+  File "/usr/lib/python3.6/copy.py", line 240, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+  File "/usr/lib/python3.6/copy.py", line 180, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+  File "/usr/lib/python3.6/copy.py", line 306, in _reconstruct
+    value = deepcopy(value, memo)
+  File "/usr/lib/python3.6/copy.py", line 180, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+  File "/usr/lib/python3.6/copy.py", line 280, in _reconstruct
+    state = deepcopy(state, memo)
+  File "/usr/lib/python3.6/copy.py", line 150, in deepcopy
+    y = copier(x, memo)
+  File "/usr/lib/python3.6/copy.py", line 240, in _deepcopy_dict
+    y[deepcopy(key, memo)] = deepcopy(value, memo)
+  File "/usr/lib/python3.6/copy.py", line 180, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+  File "/usr/lib/python3.6/copy.py", line 306, in _reconstruct
+    value = deepcopy(value, memo)
+  File "/usr/lib/python3.6/copy.py", line 161, in deepcopy
+    y = copier(memo)
+  File "/usr/local/lib/python3.6/dist-packages/torch/nn/parameter.py", line 32, in __deepcopy__
+    result = type(self)(self.data.clone(memory_format=torch.preserve_format), self.requires_grad)
+RuntimeError: CUDA out of memory. Tried to allocate 20.00 MiB (GPU 0; 7.94 GiB total capacity; 7.28 GiB already allocated; 12.00 MiB free; 7.45 GiB reserved in total by PyTorch)
