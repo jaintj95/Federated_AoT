@@ -15,8 +15,8 @@ python simulated_averaging.py --fraction 0.1 \
 --attack_case edge-case \
 --model_replacement False \
 --project_frequency 10 \
---stddev 0.025 \
---eps 2 \
+--stddev 0.0125 \
+--eps 1 \
 --adv_lr 0.02 \
 --prox_attack False \
 --poison_type southwest \
