@@ -1,15 +1,15 @@
 python simulated_averaging.py --fraction 0.1 \
 --lr 0.02 \
 --gamma 0.998 \
---num_nets 1000 \
+--num_nets 250 \
 --fl_round 250 \
---part_nets_per_round 10 \
+--part_nets_per_round 25 \
 --local_train_period 2 \
 --adversarial_local_training_period 2 \
 --dataset cifar10 \
 --model vgg16 \
 --fl_mode fixed-pool \
---attacker_pool_size 100 \
+--attacker_pool_size 25 \
 --defense_method krum \
 --attack_method blackbox \
 --attack_case edge-case \
