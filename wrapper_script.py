@@ -1,5 +1,6 @@
 import simulated_averaging as sim
 import argparse
+from simulated_averaging import bool_string
 
 def create_args():
     parser = argparse.ArgumentParser(description='PyTorch MNIST Example')
