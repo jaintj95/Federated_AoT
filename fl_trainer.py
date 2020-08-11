@@ -789,11 +789,6 @@ class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
                 g_user_indices.append(global_user_idx)
                 logger.info("@@@@@@@@ Working on client (global-index): {}, which {}-th user in the current round".format(global_user_idx, net_idx))
 
-                #criterion = nn.CrossEntropyLoss()
-                #optimizer = optim.SGD(net.parameters(), lr=self.args_lr*self.args_gamma**(flr-1), momentum=0.9, weight_decay=1e-4) # epoch, net, train_loader, optimizer, criterion
-                #for param_group in optimizer.param_groups:
-                #    logger.info("Effective lr in FL round: {} is {}".format(flr, param_group['lr']))                
-
                 criterion = nn.CrossEntropyLoss()
                 optimizer = optim.SGD(net.parameters(), lr=self.args_lr*self.args_gamma**(flr-1), momentum=0.9, weight_decay=1e-4) # epoch, net, train_loader, optimizer, criterion
                 adv_optimizer = optim.SGD(net.parameters(), lr=self.adv_lr*self.args_gamma**(flr-1), momentum=0.9, weight_decay=1e-4) # looks like adversary needs same lr to hide with others
@@ -804,16 +799,6 @@ class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
 
                 current_adv_norm_diff_list = []
                 if global_user_idx in selected_attackers:
-                    # for e in range(1, self.adversarial_local_training_period+1):
-                    #    # we always assume net index 0 is adversary
-                    #    train(net, self.device, self.poisoned_emnist_train_loader, optimizer, e, log_interval=self.log_interval, criterion=self.criterion)
-
-                    # logger.info("=====> Measuring the model performance of the poisoned model after attack ....")
-                    # test(net, self.device, self.vanilla_emnist_test_loader, test_batch_size=self.test_batch_size, criterion=self.criterion, mode="raw-task", dataset=self.dataset, poison_type=self.poison_type)
-                    # test(net, self.device, self.targetted_task_test_loader, test_batch_size=self.test_batch_size, criterion=self.criterion, mode="targetted-task", dataset=self.dataset, poison_type=self.poison_type)
-                    # # at here we can check the distance between w_bad and w_g i.e. `\|w_bad - w_g\|_2`
-                    # calc_norm_diff(gs_model=net, vanilla_model=self.net_avg, epoch=e, fl_round=flr, mode="bad")
-
                     if self.prox_attack:
                         # estimate w_hat
                         for inner_epoch in range(1, self.local_training_period+1):
@@ -846,8 +831,6 @@ class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
                         v = torch.nn.utils.parameters_to_vector(net.parameters())
                         logger.info("Attacker after scaling : Norm = {}".format(torch.norm(v)))
 
-                    # at here we can check the distance between w_bad and w_g i.e. `\|w_bad - w_g\|_2`
-                    # we can print the norm diff out for debugging
                     adv_norm_diff = calc_norm_diff(gs_model=net, vanilla_model=self.net_avg, epoch=e, fl_round=flr, mode="bad")
                     current_adv_norm_diff_list.append(adv_norm_diff)
 
@@ -855,11 +838,6 @@ class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
                         # experimental
                         norm_diff_collector.append(adv_norm_diff)
                 else:
-                    # for e in range(1, self.local_training_period+1):
-                    #    train(net, self.device, train_dl_local, optimizer, e, log_interval=self.log_interval, criterion=self.criterion)                
-                    # # at here we can check the distance between w_normal and w_g i.e. `\|w_bad - w_g\|_2`
-                    # calc_norm_diff(gs_model=net, vanilla_model=self.net_avg, epoch=e, fl_round=flr, mode="normal")
-
                     for e in range(1, self.local_training_period+1):
                        train(net, self.device, train_dl_local, optimizer, e, log_interval=self.log_interval, criterion=self.criterion)                
                        # at here we can check the distance between w_normal and w_g i.e. `\|w_bad - w_g\|_2`
@@ -921,8 +899,7 @@ class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
             calc_norm_diff(gs_model=self.net_avg, vanilla_model=self.net_avg, epoch=0, fl_round=flr, mode="avg")
             
             logger.info("Measuring the accuracy of the averaged global model, FL round: {} ...".format(flr))
-            #overall_acc = test(self.net_avg, self.device, self.vanilla_emnist_test_loader, test_batch_size=self.test_batch_size, criterion=self.criterion, mode="raw-task", dataset=self.dataset, poison_type=self.poison_type)
-            #backdoor_acc = test(self.net_avg, self.device, self.targetted_task_test_loader, test_batch_size=self.test_batch_size, criterion=self.criterion, mode="targetted-task", dataset=self.dataset, poison_type=self.poison_type)
+            
             overall_acc, raw_acc = test(self.net_avg, self.device, self.vanilla_emnist_test_loader, test_batch_size=self.test_batch_size, criterion=self.criterion, mode="raw-task", dataset=self.dataset, poison_type=self.poison_type)
             backdoor_acc, _ = test(self.net_avg, self.device, self.targetted_task_test_loader, test_batch_size=self.test_batch_size, criterion=self.criterion, mode="targetted-task", dataset=self.dataset, poison_type=self.poison_type)
  
@@ -953,3 +930,4 @@ class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
                 self.defense_technique, self.norm_bound, self.prox_attack, fixed_pool=True, model_arch=self.model)
         df.to_csv(results_filename, index=False)
         logger.info("Wrote accuracy results to: {}".format(results_filename))
+        return df.to_json()
