@@ -10,9 +10,9 @@ def create_args():
                         help='input batch size for testing (default: 1000)')
     parser.add_argument('--epochs', type=int, default=14, metavar='N',
                         help='number of epochs to train (default: 14)')
-    parser.add_argument('--lr', type=float, default=1.0, metavar='LR',
+    parser.add_argument('--lr', type=float, default=0.02, metavar='LR',
                         help='learning rate (default: 1.0)')
-    parser.add_argument('--gamma', type=float, default=0.99, metavar='M',
+    parser.add_argument('--gamma', type=float, default=0.998, metavar='M',
                         help='Learning rate step gamma (default: 0.7)')
     parser.add_argument('--no-cuda', action='store_true', default=False,
                         help='disables CUDA training')
@@ -24,25 +24,25 @@ def create_args():
                         help='how many fraction of poisoned data inserted')
     parser.add_argument('--local_train_period', type=int, default=1,
                         help='number of local training epochs')
-    parser.add_argument('--num_nets', type=int, default=3383,
+    parser.add_argument('--num_nets', type=int, default=250,
                         help='number of totally available users')
-    parser.add_argument('--part_nets_per_round', type=int, default=30,
+    parser.add_argument('--part_nets_per_round', type=int, default=25,
                         help='number of participating clients per FL round')
-    parser.add_argument('--fl_round', type=int, default=100,
+    parser.add_argument('--fl_round', type=int, default=250,
                         help='total number of FL round to conduct')
-    parser.add_argument('--fl_mode', type=str, default="fixed-freq",
+    parser.add_argument('--fl_mode', type=str, default="fixed-pool",
                         help='fl mode: fixed-freq mode or fixed-pool mode')
-    parser.add_argument('--attacker_pool_size', type=int, default=100,
+    parser.add_argument('--attacker_pool_size', type=int, default=25,
                         help='size of attackers in the population, used when args.fl_mode == fixed-pool only')
     parser.add_argument('--defense_method', type=str, default="no-defense",
                         help='defenses: no-defense|norm-clipping|norm-clipping-adaptive|weak-dp|krum|multi-krum|rfa')
-    parser.add_argument('--device', type=str, default='cuda',
+    parser.add_argument('--device', type=str, default='cuda:1',
                         help='device to set, can take the value of: cuda or cuda:x')
     parser.add_argument('--attack_method', type=str, default="blackbox",
                         help='describe the attack type: blackbox|pgd|graybox|')
-    parser.add_argument('--dataset', type=str, default='mnist',
+    parser.add_argument('--dataset', type=str, default='cifar10',
                         help='dataset to use during the training process')
-    parser.add_argument('--model', type=str, default='lenet',
+    parser.add_argument('--model', type=str, default='vgg16',
                         help='model to use during the training process')
     parser.add_argument('--eps', type=float, default=5e-5,
                         help='specify the l_inf epsilon budget')
@@ -50,7 +50,7 @@ def create_args():
                         help='describe if there is defense method: no-defense|norm-clipping|weak-dp|')
     parser.add_argument('--adversarial_local_training_period', type=int, default=5,
                         help='specify how many epochs the adversary should train for')
-    parser.add_argument('--poison_type', type=str, default='ardis',
+    parser.add_argument('--poison_type', type=str, default='southwest',
                         help='data poisoning source: |ardis|fashion|(for EMNIST) || '
                              '|southwest|southwest+wow|southwest-da|greencar-neo|howto|(for CIFAR-10)')
     parser.add_argument('--rand_seed', type=int, default=7,
