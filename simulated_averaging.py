@@ -255,4 +255,3 @@ if __name__ == "__main__":
                         help='choose std_dev for weak-dp defense')
     args = parser.parse_args()
     res = main_func(args)
-    #return res
