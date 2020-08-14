@@ -2,10 +2,11 @@ import plotly.graph_objects as go
 import plotly.express as pxl
 import csv
 import pandas as pd
+import os
 
-def plot_data(filename, defence_type=''):
+def plot_data(filename, file_dir='results', destination_dir='images', defence_type=''):
     # Create random data with numpy
-    df = pd.read_csv(filename)
+    df = pd.read_csv(os.path.join(file_dir, filename))
     
     # Create traces
     fig = go.Figure()
@@ -19,3 +20,5 @@ def plot_data(filename, defence_type=''):
     title = 'Defence Type: ' + str(defence_type) 
     fig.update_layout(title=title, xaxis_title=x_title, yaxis_title=y_title)
     fig.show()
+    image_filename = os.path.join(destination_dir, filename[:filename.index('.csv')] + '.png')
+    fig.write_image(image_filename)
