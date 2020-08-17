@@ -71,13 +71,13 @@ def create_args():
     return parser.parse_args()
 
 def test_number_of_adversary_nodes():
-    args = create_args()
+    args_t = create_args()
     idx = 0
     results_global = {}
     while idx < 10:
-        args.attacker_pool_size = (idx + 1) * 10
-        results_local = sim.main_func(args)
-        results_global[str(args.attacker_pool_size)] = results_local
+        args_t.attacker_pool_size = (idx + 1) * 10
+        results_local = sim.main_func(args_t)
+        results_global[str(args_t.attacker_pool_size)] = results_local
         idx += 1
     return results_global
 

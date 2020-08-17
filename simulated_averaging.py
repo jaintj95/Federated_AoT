@@ -254,4 +254,4 @@ if __name__ == "__main__":
     parser.add_argument('--stddev', type=float, default=0.158,
                         help='choose std_dev for weak-dp defense')
     args = parser.parse_args()
-    #return main_func(args)
+    res = main_func(args)

@@ -24,7 +24,7 @@ def plot_data(filename, file_dir='results', destination_dir='images', defence_ty
     fig.write_image(image_filename)
     
     
-def plot_data(filename, file_dir='results', destination_dir='images', defence_type=''):
+def plot_aggregated_data(filename, file_dir='results', destination_dir='images', defence_type=''):
     # Create random data with numpy
     df = pd.read_csv(os.path.join(file_dir, filename))
     
