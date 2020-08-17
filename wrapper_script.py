@@ -82,4 +82,12 @@ def test_number_of_adversary_nodes():
     return results_global
 
 def test_fraction_of_poisoned_data():
-    pass
+    args = create_args()
+    idx = 0
+    results_global = {}
+    while idx < 10:
+        args.fraction = (idx + 1) * 0.1
+        results_local = sim.main_func(args)
+        results_global[str(args.attacker_pool_size)] = results_local
+        idx += 1
+    return results_global
