@@ -38,7 +38,7 @@ class Net(nn.Module):
         return output
 
 
-def get_results_filename(poison_type, attack_method, model_replacement, project_frequency, defense_method, norm_bound, prox_attack, fixed_pool=False, model_arch="vgg9"):
+def get_results_filename(poison_type, attack_method, model_replacement, project_frequency, defense_method, norm_bound, prox_attack, attacker_pool_size, fixed_pool=False, model_arch="vgg9"):
     filename = "{}_{}_{}".format(poison_type, model_arch, attack_method)
     if fixed_pool:
         filename += "_fixed_pool" 
@@ -59,6 +59,7 @@ def get_results_filename(poison_type, attack_method, model_replacement, project_
     elif defense_method in ("krum", "multi-krum", "rfa"):
         filename += "_{}".format(defense_method)
                
+    filename += + 'attack_pool_size_' + str(attacker_pool_size)
     filename += "_acc_results.csv"
 
     return filename
@@ -634,7 +635,7 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
             df = pd.concat([df1, df])
 
         results_filename = get_results_filename(self.poison_type, self.attack_method, self.model_replacement, self.project_frequency,
-                self.defense_technique, self.norm_bound, self.prox_attack, False, self.model)
+                self.defense_technique, self.norm_bound, self.prox_attack, self.attacker_pool_size, False, self.model)
 
         df.to_csv(results_filename, index=False)
         logger.info("Wrote accuracy results to: {}".format(results_filename))
@@ -927,7 +928,7 @@ class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
             df = pd.concat([df1, df])
 
         results_filename = get_results_filename(self.poison_type, self.attack_method, self.model_replacement, self.project_frequency,
-                self.defense_technique, self.norm_bound, self.prox_attack, fixed_pool=True, model_arch=self.model)
+                self.defense_technique, self.norm_bound, self.prox_attack, self.attacker_pool_size, fixed_pool=True, model_arch=self.model)
         df.to_csv(results_filename, index=False)
         logger.info("Wrote accuracy results to: {}".format(results_filename))
         return df.to_json()
