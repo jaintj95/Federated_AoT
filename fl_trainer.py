@@ -59,7 +59,7 @@ def get_results_filename(poison_type, attack_method, model_replacement, project_
     elif defense_method in ("krum", "multi-krum", "rfa"):
         filename += "_{}".format(defense_method)
                
-    filename += + 'attack_pool_size_' + str(attacker_pool_size)
+    filename += 'attack_pool_size_' + str(attacker_pool_size)
     filename += "_acc_results.csv"
 
     return filename
