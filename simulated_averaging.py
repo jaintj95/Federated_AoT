@@ -205,7 +205,7 @@ if __name__ == "__main__":
                         help='random seed (default: 1)')
     parser.add_argument('--log-interval', type=int, default=100, metavar='N',
                         help='how many batches to wait before logging training status')
-    parser.add_argument('--fraction', type=float or int, default=10,
+    parser.add_argument('--fraction', type=float or int, default=0.1,
                         help='how many fraction of poisoned data inserted')
     parser.add_argument('--local_train_period', type=int, default=1,
                         help='number of local training epochs')
