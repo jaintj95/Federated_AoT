@@ -169,6 +169,7 @@ if __name__ == '__main__':
     fraction=0.15 #0.0334 #0.01 #0.1 #0.0168 #10
     num_gdps_sampled = 100
     poison = 'ardis'
+    #poison = 'emnist'
 
     # prepare fashionMNIST dataset
     fashion_mnist_train_dataset = datasets.FashionMNIST('./data', train=True, download=True,

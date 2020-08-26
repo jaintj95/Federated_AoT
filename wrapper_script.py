@@ -77,7 +77,7 @@ def test_number_of_adversary_nodes():
     while idx < 10:
         print('Checking for idx: ' + str(idx))
         args_t.attacker_pool_size = (idx + 1) * 10
-        args_t.defense_method = 'norm-clipping'
+        args_t.defense_method = 'multi-krum'
         results_local = sim.main_func(args_t)
         results_global[str(args_t.attacker_pool_size)] = results_local
         idx += 2
