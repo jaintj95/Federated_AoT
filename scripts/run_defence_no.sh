@@ -1,4 +1,4 @@
-python simulated_averaging.py --fraction 0.1 \
+python simulated_averaging.py --fraction 0.15 \
 --lr 0.02 \
 --gamma 0.998 \
 --num_nets 250 \
@@ -6,7 +6,7 @@ python simulated_averaging.py --fraction 0.1 \
 --part_nets_per_round 25 \
 --local_train_period 2 \
 --adversarial_local_training_period 2 \
---dataset cifar10 \
+--dataset emnist \
 --model vgg16 \
 --fl_mode fixed-pool \
 --attacker_pool_size 25 \
@@ -22,4 +22,4 @@ python simulated_averaging.py --fraction 0.1 \
 --poison_type southwest \
 --norm_bound 2 \
 --device=cuda:1 \
-> logs/southwest_vgg16_blackbox_rfa_log 2>&1
+> logs/southwest_vgg16_blackbox_no_defence_log 2>&1
