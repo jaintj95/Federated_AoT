@@ -20,6 +20,6 @@ python simulated_averaging.py --fraction 0.1 \
 --adv_lr 0.02 \
 --prox_attack False \
 --poison_type southwest \
---norm_bound 2 \
+--norm_bound 1 \
 --device=cuda:1 \
 > logs/southwest_vgg16_blackbox_nc_log 2>&1
