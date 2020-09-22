@@ -93,3 +93,14 @@ def test_fraction_of_poisoned_data():
         results_global[str(args.attacker_pool_size)] = results_local
         idx += 1
     return results_global
+
+'''
+1. Client guesses the value fraction to poison
+2. Server has a value of norm bound (which is secret)
+3. Client keeps updating the value.
+
+1. Client has to poison test set against which it measures the accuracy of the model.
+2. 
+'''
+def test_game_play():
+  pass

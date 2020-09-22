@@ -13,13 +13,24 @@ def plot_data(filename, file_dir='results', destination_dir='images', defence_ty
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=df['fl_iter'], y=df['main_task_acc'],
                         mode='lines',
-                        name='test'))
+                        name='test',
+                        textfont=dict(
+                            family="sans serif",
+                            size=36,
+                            color="crimson"
+                        )))
     fig.add_trace(go.Scatter(x=df['fl_iter'], y=df['backdoor_acc'],
-                        mode='lines', name='target'))
+                        mode='lines', name='target', textfont=dict(
+                                                        family="sans serif",
+                                                        size=36,
+                                                        color="crimson"
+                                                        )))
     x_title = '# Rounds'
     y_title = 'Success Probability'
     title = 'Defence Type: ' + str(defence_type) 
     fig.update_layout(title=title, xaxis_title=x_title, yaxis_title=y_title)
+    fig.update_layout(uniformtext_minsize=24, uniformtext_mode='hide')
+    fig.update_traces(textfont_size=24)
     fig.show()
     image_filename = os.path.join(destination_dir, filename[:filename.index('.csv')] + '.png')
     fig.write_image(image_filename)
