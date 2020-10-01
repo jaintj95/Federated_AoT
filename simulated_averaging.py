@@ -11,7 +11,7 @@ import torch.nn.functional as F
 import torch.backends.cudnn as cudnn
 from torchvision import datasets, transforms
 
-from utils import seed_experiment, load_poisoned_dataset, partition_data
+from utils import seed_experiment, load_poisoned_dataset, partition_data, logger
 from fl_trainer import FixedPoolFederatedLearningTrainer, FrequencyFederatedLearningTrainer, test, Net
 from models.vgg import get_vgg_model
 

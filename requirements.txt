@@ -1,13 +1,13 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: linux-64
-_libgcc_mutex=0.1=main
-blas=1.0=mkl
-ca-certificates=2020.6.24=0
-certifi=2020.6.20=py37_0
-cudatoolkit=10.2.89=hfd86e86_1
-freetype=2.10.2=h5ab3b9f_0
-intel-openmp=2020.1=217
+# _libgcc_mutex=0.1=main
+# blas=1.0=mkl
+# ca-certificates=2020.6.24=0
+# certifi=2020.6.20=py37_0
+# cudatoolkit=10.2.89=hfd86e86_1
+# freetype=2.10.2=h5ab3b9f_0
+# intel-openmp=2020.1=217
 jpeg=9b=h024ee3a_2
 lcms2=2.11=h396b838_0
 ld_impl_linux-64=2.33.1=h53a641e_7
