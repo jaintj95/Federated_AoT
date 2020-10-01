@@ -12,6 +12,9 @@ import pandas as pd
 from torch.nn.utils import parameters_to_vector, vector_to_parameters
 import datasets
 
+'''
+Neural Network Architecture
+'''
 class Net(nn.Module):
     def __init__(self, num_classes):
         super(Net, self).__init__()
@@ -38,6 +41,10 @@ class Net(nn.Module):
         return output
 
 
+    
+'''
+Function to get the file name
+'''
 def get_results_filename(poison_type, attack_method, model_replacement, project_frequency, defense_method, norm_bound, prox_attack, attacker_pool_size, fixed_pool=False, model_arch="vgg9"):
     filename = "{}_{}_{}".format(poison_type, model_arch, attack_method)
     if fixed_pool:
@@ -65,9 +72,13 @@ def get_results_filename(poison_type, attack_method, model_replacement, project_
     return filename
 
 
+
+'''
+Calculates L2 norm between gs_model and vanilla_model.
+'''
 def calc_norm_diff(gs_model, vanilla_model, epoch, fl_round, mode="bad"):
     norm_diff = 0
-    for p_index, p in enumerate(gs_model.parameters()):
+    for p_index, _ in enumerate(gs_model.parameters()):
         norm_diff += torch.norm(list(gs_model.parameters())[p_index] - list(vanilla_model.parameters())[p_index]) ** 2
     norm_diff = torch.sqrt(norm_diff).item()
     if mode == "bad":
@@ -80,7 +91,9 @@ def calc_norm_diff(gs_model, vanilla_model, epoch, fl_round, mode="bad"):
 
     return norm_diff
 
-
+'''
+XXX - Find out
+'''
 def fed_avg_aggregator(net_list, net_freq, device, model="lenet"):
     #net_avg = VGG('VGG11').to(device)
     if model == "lenet":
@@ -101,7 +114,9 @@ def fed_avg_aggregator(net_list, net_freq, device, model="lenet"):
         p.data = whole_aggregator[param_index]
     return net_avg
 
-
+'''
+1. Does some training: but is it benign or adversarial (XXX)?
+'''
 def estimate_wg(model, device, train_loader, optimizer, epoch, log_interval, criterion):
     logger.info("Prox-attack: Estimating wg_hat")
     model.train()
@@ -118,8 +133,10 @@ def estimate_wg(model, device, train_loader, optimizer, epoch, log_interval, cri
                 epoch, batch_idx * len(data), len(train_loader.dataset),
                 100. * batch_idx / len(train_loader), loss.item()))
 
-
-
+'''
+train function for both honest nodes and adversary.
+NOTE: this trains only for one epoch
+'''
 def train(model, device, train_loader, optimizer, epoch, log_interval, criterion, pgd_attack=False, eps=5e-4, model_original=None,
         proj="l_2", project_frequency=1, adv_optimizer=None, prox_attack=False, wg_hat=None):
     """
@@ -195,6 +212,10 @@ def train(model, device, train_loader, optimizer, epoch, log_interval, criterion
                 100. * batch_idx / len(train_loader), loss.item()))
 
 
+
+'''
+Tests the accuracy of the model on test dataset and tast dataset.
+'''            
 def test(model, device, test_loader, test_batch_size, criterion, mode="raw-task", dataset="cifar10", poison_type="fashion"):
     class_correct = list(0. for i in range(10))
     class_total = list(0. for i in range(10))
@@ -294,6 +315,10 @@ def test(model, device, test_loader, test_batch_size, criterion, mode="raw-task"
             final_acc = 100 * class_correct[target_class] / class_total[target_class]
     return final_acc, task_acc
 
+
+'''
+Base Class for two different FL trainer classes
+'''
 class FederatedLearningTrainer:
     def __init__(self, *args, **kwargs):
         self.hyper_params = None
@@ -301,7 +326,9 @@ class FederatedLearningTrainer:
     def run(self, client_model, *args, **kwargs):
         raise NotImplementedError()
 
-
+'''
+Main Class for FL: Frequency Federated Learning
+'''
 class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
     def __init__(self, arguments=None, *args, **kwargs):
         #self.poisoned_emnist_dataset = arguments['poisoned_emnist_dataset']
@@ -377,6 +404,10 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
             NotImplementedError("Unsupported defense method !")
 
 
+            
+    '''
+    Perform training.
+    '''        
     def run(self):
         main_task_acc = []
         raw_task_acc = []
@@ -644,6 +675,10 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
         # torch.save(self.net_avg.state_dict(), "./checkpoint/emnist_lenet_10epoch.pt")
 
 
+        
+'''
+Main Class for FL: Fixed Pool Federated Learning
+'''
 class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
     def __init__(self, arguments=None, *args, **kwargs):
 
