@@ -3,8 +3,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-from utils import *
-from defense import *
+from utils import get_dataloader
+from defense import RFA, Krum, WeightDiffClippingDefense, AddNoise
 
 from models.vgg import get_vgg_model
 import pandas as pd
@@ -76,23 +76,16 @@ def get_results_filename(poison_type, attack_method, model_replacement, project_
 '''
 Calculates L2 norm between gs_model and vanilla_model.
 '''
-def calc_norm_diff(gs_model, vanilla_model, epoch, fl_round, mode="bad"):
+def calc_norm_diff(gs_model, vanilla_model):
     norm_diff = 0
     for p_index, _ in enumerate(gs_model.parameters()):
         norm_diff += torch.norm(list(gs_model.parameters())[p_index] - list(vanilla_model.parameters())[p_index]) ** 2
     norm_diff = torch.sqrt(norm_diff).item()
-    if mode == "bad":
-        #pdb.set_trace()
-        logger.info("===> ND `|w_bad-w_g|` in local epoch: {} | FL round: {} |, is {}".format(epoch, fl_round, norm_diff))
-    elif mode == "normal":
-        logger.info("===> ND `|w_normal-w_g|` in local epoch: {} | FL round: {} |, is {}".format(epoch, fl_round, norm_diff))
-    elif mode == "avg":
-        logger.info("===> ND `|w_avg-w_g|` in local epoch: {} | FL round: {} |, is {}".format(epoch, fl_round, norm_diff))
-
     return norm_diff
 
 '''
-XXX - Find out
+XXX - aggregation of updates received from all the clients.
+XXX - What other federated aggregation algorithms can be implemented?
 '''
 def fed_avg_aggregator(net_list, net_freq, device, model="lenet"):
     #net_avg = VGG('VGG11').to(device)
@@ -115,7 +108,7 @@ def fed_avg_aggregator(net_list, net_freq, device, model="lenet"):
     return net_avg
 
 '''
-1. Does some training: but is it benign or adversarial (XXX)?
+1. Does some training: but is it benign or adversarial (most likely adversarial) (XXX)?
 '''
 def estimate_wg(model, device, train_loader, optimizer, epoch, log_interval, criterion):
     logger.info("Prox-attack: Estimating wg_hat")
@@ -136,6 +129,7 @@ def estimate_wg(model, device, train_loader, optimizer, epoch, log_interval, cri
 '''
 train function for both honest nodes and adversary.
 NOTE: this trains only for one epoch
+NOTE: this function is not stateless as it changes the value of variable model.
 '''
 def train(model, device, train_loader, optimizer, epoch, log_interval, criterion, pgd_attack=False, eps=5e-4, model_original=None,
         proj="l_2", project_frequency=1, adv_optimizer=None, prox_attack=False, wg_hat=None):
@@ -393,7 +387,8 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
             self._defender = WeightDiffClippingDefense(norm_bound=arguments['norm_bound'])
         elif arguments["defense_technique"] == "weak-dp":
             # doesn't really add noise. just clips
-            self._defender = WeightDiffClippingDefense(norm_bound=arguments['norm_bound'])
+            # XXX: check the algorithm for weak dp.
+            self._defender = WeakDPDefense(norm_bound=arguments['norm_bound'])
         elif arguments["defense_technique"] == "krum":
             self._defender = Krum(mode='krum', num_workers=self.part_nets_per_round, num_adv=1)
         elif arguments["defense_technique"] == "multi-krum":
@@ -404,9 +399,201 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
             NotImplementedError("Unsupported defense method !")
 
 
+    '''
+    steps: 
+    server: picks a defence method e.g. norm clipping with value from a distribution.
+    clients: 
+        if client is honest:
+            does normal training
+        else:
+            does adversarial training
+        
+    server:
+        collect weight updates from all the nodes.
+        apply defense technique.
+    '''
+    def run_modified():
+        # init the variables
+        main_task_acc = []
+        raw_task_acc = []
+        backdoor_task_acc = []
+        fl_iter_list = []
+        adv_norm_diff_list = []
+        wg_norm_list = []
+        model_to_begin = None
+        # iterate over all rounds
+        for flr in range(1, self.fl_round+1):
+            # 1. where is the model sent by the server?
+            # 2. sample the clients
+            selected_node_indices = np.random.choice(self.num_nets, size=self.part_nets_per_round-1, replace=False)
+            num_data_points = [len(self.net_dataidx_map[i]) for i in selected_node_indices] # No of data points at each client.
+            total_num_dps_per_round = sum(num_data_points) + self.num_dps_poisoned_dataset # XXX
+            logger.info("FL round: {}, total num data points: {}, num dps poisoned: {}".format(flr, num_data_points, self.num_dps_poisoned_dataset))
+            
+            net_freq = [self.num_dps_poisoned_dataset/ total_num_dps_per_round] + [num_data_points[i]/total_num_dps_per_round for i in range(self.part_nets_per_round-1)]
+            logger.info("Net freq: {}, FL round: {} with adversary".format(net_freq, flr))
+            
+            # we need to reconstruct the net list at the beginning
+            net_list = [copy.deepcopy(self.net_avg) for _ in range(self.part_nets_per_round)]
+            logger.info("################## Starting fl round: {}".format(flr))
+            
+            model_server = list(self.net_avg.parameters())
+            wg_server_clone = copy.deepcopy(self.net_avg)
+            wg_hat = None
+            v0 = torch.nn.utils.parameters_to_vector(model_server)
+            wg_norm_list.append(torch.norm(v0).item())
+            
+            # start the FL process
+            # step 1: do the training.
+            for net_idx, net in enumerate(net_list):
+                is_adversarial = net_idx == 0
+                if is_adversarial:
+                    global_user_idx = -1 # we assign "-1" as the indices of the attacker in global user indices
+                    logger.info("@@@@@@@@ Working on client: {}, which is Attacker".format(net_idx))
+                else:
+                    global_user_idx = selected_node_indices[net_idx-1]
+                    dataidxs = self.net_dataidx_map[global_user_idx]
+                    if self.attack_case == "edge-case":
+                        train_dl_local, _ = get_dataloader(self.dataset, './data', self.batch_size, 
+                                                            self.test_batch_size, dataidxs) # also get the data loader
+                    else:
+                        NotImplementedError("Unsupported attack case ...")
+                    logger.info("@@@@@@@@ Working on client: {}, which is Global user: {}".format(net_idx, global_user_idx))
+                g_user_indices.append(global_user_idx)
+                
+                criterion = nn.CrossEntropyLoss()
+                optimizer = optim.SGD(net.parameters(), lr=self.args_lr*self.args_gamma**(flr-1), momentum=0.9, weight_decay=1e-4) # epoch, net, train_loader, optimizer, criterion
+                adv_optimizer = optim.SGD(net.parameters(), lr=self.adv_lr*self.args_gamma**(flr-1), momentum=0.9, weight_decay=1e-4) # looks like adversary needs same lr to hide with others
+                prox_optimizer = optim.SGD(wg_server_clone.parameters(), lr=self.args_lr*self.args_gamma**(flr-1), momentum=0.9, weight_decay=1e-4)
+                for param_group in optimizer.param_groups:
+                    logger.info("Effective lr in FL round: {} is {}".format(flr, param_group['lr']))
+                
+                if is_adversarial:
+                    for e in range(1, self.adversarial_local_training_period+1):
+                        train(net, 
+                          self.device, 
+                          self.poisoned_emnist_train_loader, 
+                          optimizer, 
+                          e, 
+                          log_interval=self.log_interval, 
+                          criterion=self.criterion,
+                          pgd_attack=self.pgd_attack, 
+                          eps=self.eps, 
+                          model_original=model_original, 
+                          project_frequency=self.project_frequency, 
+                          adv_optimizer=adv_optimizer,
+                          prox_attack=self.prox_attack, 
+                          wg_hat=wg_hat)
+                        
+                    # XXX: This return value of these test calls is not getting utilised.
+#                    final_acc_1, task_acc_1 = test(net, 
+#                         self.device, 
+#                         self.vanilla_emnist_test_loader, 
+#                         test_batch_size=self.test_batch_size, 
+#                         criterion=self.criterion, 
+#                         mode="raw-task", 
+#                         dataset=self.dataset, 
+#                         poison_type=self.poison_type)
+#
+#                    final_acc_2, task_acc_2 = test(net, 
+#                         self.device, 
+#                         self.targetted_task_test_loader, 
+#                         test_batch_size=self.test_batch_size, 
+#                         criterion=self.criterion, 
+#                         mode="targetted-task", 
+#                         dataset=self.dataset, 
+#                         poison_type=self.poison_type)
+
+                    # at here we can check the distance between w_bad and w_g i.e. `\|w_bad - w_g\|_2`
+                    # we can print the norm diff out for debugging
+                    adv_norm_diff = calc_norm_diff(gs_model=net, vanilla_model=self.net_avg)
+                    adv_norm_diff_list.append(adv_norm_diff)
+                else:
+                    for e in range(1, self.local_training_period+1):
+                        train(net, self.device, train_dl_local, optimizer, e, log_interval=self.log_interval, criterion=self.criterion)                
+                    honest_norm_diff = calc_norm_diff(gs_model=net, vanilla_model=self.net_avg)
+
+            
+            # step 2: aggregation at the server.
+            
+            # step 2: server applies the defense.: norm-clipping does not reject any input. It needs to change for the new approach.
+            if self.defense_technique == "no-defense":
+                pass
+            elif self.defense_technique == "norm-clipping":
+                for net_idx, net in enumerate(net_list):
+                    self._defender.exec(client_model=net, global_model=self.net_avg)
+            elif self.defense_technique == "weak-dp":
+                # this guy is just going to clip norm. No noise added here XXX: Questionable code.
+                for net_idx, net in enumerate(net_list):
+                    self._defender.exec(client_model=net,
+                                        global_model=self.net_avg,)
+            elif self.defense_technique == "krum":
+                net_list, net_freq = self._defender.exec(client_models=net_list, 
+                                                        num_dps=[self.num_dps_poisoned_dataset]+num_data_points,
+                                                        g_user_indices=g_user_indices,
+                                                        device=self.device)
+            elif self.defense_technique == "multi-krum":
+                net_list, net_freq = self._defender.exec(client_models=net_list, 
+                                                        num_dps=[self.num_dps_poisoned_dataset]+num_data_points,
+                                                        g_user_indices=g_user_indices,
+                                                        device=self.device)
+            elif self.defense_technique == "rfa":
+                net_list, net_freq = self._defender.exec(client_models=net_list,
+                                                        net_freq=net_freq,
+                                                        maxiter=500,
+                                                        eps=1e-5,
+                                                        ftol=1e-7,
+                                                        device=self.device)
+            else:
+                NotImplementedError("Unsupported defense method !")
+        
+            # step 3: aggregate the contributions from each client node.
+            # after local training periods
+            self.net_avg = fed_avg_aggregator(net_list, net_freq, device=self.device, model=self.model)
+            if self.defense_technique == "weak-dp":
+                # add noise to self.net_avg
+                # XXX: I think noise is to be added in clients directly.
+                noise_adder = AddNoise(stddev=self.stddev)
+                noise_adder.exec(client_model=self.net_avg,
+                                                device=self.device)
+
+            v = torch.nn.utils.parameters_to_vector(self.net_avg.parameters())
+            logger.info("############ Averaged Model : Norm {}".format(torch.norm(v)))
+
+            logger.info("Measuring the accuracy of the averaged global model, FL round: {} ...".format(flr))
+
+            overall_acc, raw_acc = test(self.net_avg, self.device, self.vanilla_emnist_test_loader, test_batch_size=self.test_batch_size, criterion=self.criterion, mode="raw-task", dataset=self.dataset, poison_type=self.poison_type)
+            backdoor_acc, _ = test(self.net_avg, self.device, self.targetted_task_test_loader, test_batch_size=self.test_batch_size, criterion=self.criterion, mode="targetted-task", dataset=self.dataset, poison_type=self.poison_type)
+
+            fl_iter_list.append(flr)
+            main_task_acc.append(overall_acc)
+            raw_task_acc.append(raw_acc)
+            backdoor_task_acc.append(backdoor_acc)
+            
+        df = pd.DataFrame({'fl_iter': fl_iter_list, 
+                            'main_task_acc': main_task_acc, 
+                            'backdoor_acc': backdoor_task_acc, 
+                            'raw_task_acc':raw_task_acc, 
+                            'adv_norm_diff': adv_norm_diff_list, 
+                            'wg_norm': wg_norm_list
+                            })
+       
+        if self.poison_type == 'ardis':
+            # add a row showing initial accuracies
+            df1 = pd.DataFrame({'fl_iter': [0], 'main_task_acc': [88], 'backdoor_acc': [11], 'raw_task_acc': [0], 'adv_norm_diff': [0], 'wg_norm': [0]})
+            df = pd.concat([df1, df])
+
+        results_filename = get_results_filename(self.poison_type, self.attack_method, self.model_replacement, self.project_frequency,
+                self.defense_technique, self.norm_bound, self.prox_attack, self.attacker_pool_size, False, self.model)
+
+        df.to_csv(results_filename, index=False)
+        logger.info("Wrote accuracy results to: {}".format(results_filename))
+        
+        
             
     '''
-    Perform training.
+    Perform training steps:
+    1. 
     '''        
     def run(self):
         main_task_acc = []
@@ -434,8 +621,7 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
                 logger.info("FL round: {}, total num data points: {}, num dps poisoned: {}".format(flr, num_data_points, self.num_dps_poisoned_dataset))
 
                 net_freq = [self.num_dps_poisoned_dataset/ total_num_dps_per_round] + [num_data_points[i]/total_num_dps_per_round for i in range(self.part_nets_per_round-1)]
-                logger.info("Net freq: {}, FL round: {} with adversary".format(net_freq, flr)) 
-                #pdb.set_trace()
+                logger.info("Net freq: {}, FL round: {} with adversary".format(net_freq, flr))
 
                 # we need to reconstruct the net list at the beginning
                 net_list = [copy.deepcopy(self.net_avg) for _ in range(self.part_nets_per_round)]
@@ -447,7 +633,7 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
                 wg_hat = None
                 v0 = torch.nn.utils.parameters_to_vector(model_original)
                 wg_norm_list.append(torch.norm(v0).item())
-               
+                
                 # start the FL process
                 for net_idx, net in enumerate(net_list):
                     #net  = net_list[net_idx]                
@@ -493,18 +679,53 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
                         for e in range(1, self.adversarial_local_training_period+1):
                            # we always assume net index 0 is adversary
                             if self.defense_technique in ('krum', 'multi-krum'):
-                                train(net, self.device, self.poisoned_emnist_train_loader, optimizer, e, log_interval=self.log_interval, criterion=self.criterion,
-                                        pgd_attack=self.pgd_attack, eps=self.eps*self.args_gamma**(flr-1), model_original=model_original, project_frequency=self.project_frequency, adv_optimizer=adv_optimizer,
-                                        prox_attack=self.prox_attack, wg_hat=wg_hat)
+                                train(net, 
+                                      self.device, 
+                                      self.poisoned_emnist_train_loader, 
+                                      optimizer, 
+                                      e, 
+                                      log_interval=self.log_interval, 
+                                      criterion=self.criterion,
+                                      pgd_attack=self.pgd_attack, 
+                                      eps=self.eps*self.args_gamma**(flr-1), 
+                                      model_original=model_original, 
+                                      project_frequency=self.project_frequency, 
+                                      adv_optimizer=adv_optimizer,
+                                      prox_attack=self.prox_attack, 
+                                      wg_hat=wg_hat)
                             else:
-                                train(net, self.device, self.poisoned_emnist_train_loader, optimizer, e, log_interval=self.log_interval, criterion=self.criterion,
-                                        pgd_attack=self.pgd_attack, eps=self.eps, model_original=model_original, project_frequency=self.project_frequency, adv_optimizer=adv_optimizer,
-                                        prox_attack=self.prox_attack, wg_hat=wg_hat)
-
+                                train(net, 
+                                      self.device, 
+                                      self.poisoned_emnist_train_loader, 
+                                      optimizer, 
+                                      e, 
+                                      log_interval=self.log_interval, 
+                                      criterion=self.criterion,
+                                      pgd_attack=self.pgd_attack, 
+                                      eps=self.eps, 
+                                      model_original=model_original, 
+                                      project_frequency=self.project_frequency, 
+                                      adv_optimizer=adv_optimizer,
+                                      prox_attack=self.prox_attack, 
+                                      wg_hat=wg_hat)
                                
-                               
-                        test(net, self.device, self.vanilla_emnist_test_loader, test_batch_size=self.test_batch_size, criterion=self.criterion, mode="raw-task", dataset=self.dataset, poison_type=self.poison_type)
-                        test(net, self.device, self.targetted_task_test_loader, test_batch_size=self.test_batch_size, criterion=self.criterion, mode="targetted-task", dataset=self.dataset, poison_type=self.poison_type)
+                        test(net, 
+                             self.device, 
+                             self.vanilla_emnist_test_loader, 
+                             test_batch_size=self.test_batch_size, 
+                             criterion=self.criterion, 
+                             mode="raw-task", 
+                             dataset=self.dataset, 
+                             poison_type=self.poison_type)
+                        
+                        test(net, 
+                             self.device, 
+                             self.targetted_task_test_loader, 
+                             test_batch_size=self.test_batch_size, 
+                             criterion=self.criterion, 
+                             mode="targetted-task", 
+                             dataset=self.dataset, 
+                             poison_type=self.poison_type)
 
                         # if model_replacement scale models
                         if self.model_replacement:
@@ -520,7 +741,7 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
 
                         # at here we can check the distance between w_bad and w_g i.e. `\|w_bad - w_g\|_2`
                         # we can print the norm diff out for debugging
-                        adv_norm_diff = calc_norm_diff(gs_model=net, vanilla_model=self.net_avg, epoch=e, fl_round=flr, mode="bad")
+                        adv_norm_diff = calc_norm_diff(gs_model=net, vanilla_model=self.net_avg)
                         adv_norm_diff_list.append(adv_norm_diff)
 
                         if self.defense_technique == "norm-clipping-adaptive":
@@ -528,10 +749,10 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
                             norm_diff_collector.append(adv_norm_diff)
                     else:
                         for e in range(1, self.local_training_period+1):
-                           train(net, self.device, train_dl_local, optimizer, e, log_interval=self.log_interval, criterion=self.criterion)                
+                            train(net, self.device, train_dl_local, optimizer, e, log_interval=self.log_interval, criterion=self.criterion)                
                            # at here we can check the distance between w_normal and w_g i.e. `\|w_bad - w_g\|_2`
                         # we can print the norm diff out for debugging
-                        honest_norm_diff = calc_norm_diff(gs_model=net, vanilla_model=self.net_avg, epoch=e, fl_round=flr, mode="normal")
+                        honest_norm_diff = calc_norm_diff(gs_model=net, vanilla_model=self.net_avg)
                         
                         if self.defense_technique == "norm-clipping-adaptive":
                             # experimental
@@ -579,7 +800,7 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
                     for e in range(1, self.local_training_period+1):
                         train(net, self.device, train_dl_local, optimizer, e, log_interval=self.log_interval, criterion=self.criterion)
 
-                    honest_norm_diff = calc_norm_diff(gs_model=net, vanilla_model=self.net_avg, epoch=e, fl_round=flr, mode="normal")
+                    honest_norm_diff = calc_norm_diff(gs_model=net, vanilla_model=self.net_avg)
 
                     if self.defense_technique == "norm-clipping-adaptive":
                         # experimental
@@ -640,7 +861,7 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
             v = torch.nn.utils.parameters_to_vector(self.net_avg.parameters())
             logger.info("############ Averaged Model : Norm {}".format(torch.norm(v)))
 
-            calc_norm_diff(gs_model=self.net_avg, vanilla_model=self.vanilla_model, epoch=0, fl_round=flr, mode="avg")
+            calc_norm_diff(gs_model=self.net_avg, vanilla_model=self.vanilla_model)
             
             logger.info("Measuring the accuracy of the averaged global model, FL round: {} ...".format(flr))
 
@@ -875,7 +1096,7 @@ class FixedPoolFederatedLearningTrainer(FederatedLearningTrainer):
                         norm_diff_collector.append(adv_norm_diff)
                 else:
                     for e in range(1, self.local_training_period+1):
-                       train(net, self.device, train_dl_local, optimizer, e, log_interval=self.log_interval, criterion=self.criterion)                
+                        train(net, self.device, train_dl_local, optimizer, e, log_interval=self.log_interval, criterion=self.criterion)                
                        # at here we can check the distance between w_normal and w_g i.e. `\|w_bad - w_g\|_2`
                     # we can print the norm diff out for debugging
                     honest_norm_diff = calc_norm_diff(gs_model=net, vanilla_model=self.net_avg, epoch=e, fl_round=flr, mode="normal")
