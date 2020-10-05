@@ -13,13 +13,13 @@ python simulated_averaging.py --fraction 0.1 \
 --defense_method norm-clipping \
 --attack_method blackbox \
 --attack_case edge-case \
---model_replacement False \
+--model_replacement True \
 --project_frequency 10 \
 --stddev 0.025 \
 --eps 2 \
 --adv_lr 0.02 \
 --prox_attack False \
 --poison_type southwest \
---norm_bound 1 \
+--norm_bound 2 \
 --device=cuda:1 \
 > logs/southwest_vgg16_blackbox_nc_log 2>&1
