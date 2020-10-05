@@ -8,7 +8,7 @@ python simulated_averaging.py --fraction 0.1 \
 --adversarial_local_training_period 2 \
 --dataset cifar10 \
 --model vgg16 \
---fl_mode fixed-pool \
+--fl_mode fixed-freq \
 --attacker_pool_size 25 \
 --defense_method norm-clipping \
 --attack_method blackbox \

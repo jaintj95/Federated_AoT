@@ -56,8 +56,8 @@ def main_func(args):
     import copy
 
     # the hyper-params are inspired by the paper "Can you really backdoor FL?" (https://arxiv.org/pdf/1911.07963.pdf)
-    # partition_strategy = "homo"
-    partition_strategy = "hetero-dir"
+    partition_strategy = "homo"
+#    partition_strategy = "hetero-dir"
 
     net_dataidx_map = partition_data(args.dataset, './data', partition_strategy, args.num_nets, 0.5, args)
 
@@ -116,13 +116,10 @@ def main_func(args):
             "args_lr": args.lr,
             "args_gamma": args.gamma,
             "attacking_fl_rounds": [i for i in range(1, args.fl_round + 1) if (i - 1) % 10 == 0],
-            # "attacking_fl_rounds":[i for i in range(1, fl_round + 1)], #"attacking_fl_rounds":[1],
-            # "attacking_fl_rounds":[i for i in range(1, args.fl_round + 1) if (i-1)%100 == 0],
-            # "attacking_fl_rounds":[i for i in range(1, fl_round + 1)], #"attacking_fl_rounds":[1],
             "num_dps_poisoned_dataset": num_dps_poisoned_dataset,
-            "poisoned_emnist_train_loader": poisoned_train_loader,
+            "poisoned_emnist_train_loader": poisoned_train_loader, # XXX: why is poisoned_train_loader assigned to poisoned_emnist.., it can be for another dataset as well.
             "clean_train_loader": clean_train_loader,
-            "vanilla_emnist_test_loader": vanilla_test_loader,
+            "vanilla_emnist_test_loader": vanilla_test_loader, # XXX: why is vanilla loader assigned to vanilla_emnist.., it can be for another dataset as well.
             "targetted_task_test_loader": targetted_task_test_loader,
             "batch_size": args.batch_size,
             "test_batch_size": args.test_batch_size,
@@ -142,7 +139,7 @@ def main_func(args):
         }
 
         frequency_fl_trainer = FrequencyFederatedLearningTrainer(arguments=arguments)
-        frequency_fl_trainer.run()
+        frequency_fl_trainer.run_modified()
 
     elif args.fl_mode == "fixed-pool":
         arguments = {
