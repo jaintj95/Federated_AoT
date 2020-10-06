@@ -2,11 +2,14 @@ import numpy as np
 
 import torch
 import torch.nn.functional as F
+import torch.nn as nn
+import torch.optim as optim
+import copy
 
 from utils import get_dataloader
 from defense import RFA, Krum, WeightDiffClippingDefense, AddNoise
 
-from models.vgg import get_vgg_model
+from models.vgg import get_vgg_model, logger
 import pandas as pd
 
 from torch.nn.utils import parameters_to_vector, vector_to_parameters
@@ -360,6 +363,7 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
         self.prox_attack = arguments['prox_attack']
         self.attack_case = arguments['attack_case']
         self.stddev = arguments['stddev']
+        self.attacker_pool_size = arguments['attacker_pool_size']
 
         logger.info("Posion type! {}".format(self.poison_type))
 
@@ -412,7 +416,7 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
         collect weight updates from all the nodes.
         apply defense technique.
     '''
-    def run_modified():
+    def run_modified(self):
         # init the variables
         main_task_acc = []
         raw_task_acc = []
@@ -425,6 +429,7 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
         for flr in range(1, self.fl_round+1):
             # 1. where is the model sent by the server?
             # 2. sample the clients
+            g_user_indices = []
             selected_node_indices = np.random.choice(self.num_nets, size=self.part_nets_per_round-1, replace=False)
             num_data_points = [len(self.net_dataidx_map[i]) for i in selected_node_indices] # No of data points at each client.
             total_num_dps_per_round = sum(num_data_points) + self.num_dps_poisoned_dataset # XXX
@@ -437,10 +442,10 @@ class FrequencyFederatedLearningTrainer(FederatedLearningTrainer):
             net_list = [copy.deepcopy(self.net_avg) for _ in range(self.part_nets_per_round)]
             logger.info("################## Starting fl round: {}".format(flr))
             
-            model_server = list(self.net_avg.parameters())
+            model_original = list(self.net_avg.parameters())
             wg_server_clone = copy.deepcopy(self.net_avg)
             wg_hat = None
-            v0 = torch.nn.utils.parameters_to_vector(model_server)
+            v0 = torch.nn.utils.parameters_to_vector(model_original)
             wg_norm_list.append(torch.norm(v0).item())
             
             # start the FL process

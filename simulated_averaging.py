@@ -136,6 +136,7 @@ def main_func(args):
             "prox_attack": args.prox_attack,
             "attack_case": args.attack_case,
             "stddev": args.stddev,
+            "attacker_pool_size": args.attacker_pool_size
         }
 
         frequency_fl_trainer = FrequencyFederatedLearningTrainer(arguments=arguments)
